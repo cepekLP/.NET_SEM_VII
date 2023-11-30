@@ -3,7 +3,7 @@ import useWebSocket from 'react-use-websocket';
 import './App.css';
 
 
-const WS_URL = 'wss://127.0.0.1:6969';
+const WS_URL = 'wss://localhost:6969/ws';
 
 function App() {
     useWebSocket(WS_URL, {

@@ -39,10 +39,22 @@ if (context.WebSockets.IsWebSocketRequest)
         var message = "Hello World!";
         var bytes = Encoding.UTF8.GetBytes(message);
         var arraySegment = new ArraySegment<byte>(bytes, 0, bytes.Length);
-        await ws.SendAsync(arraySegment,
-                            WebSocketMessageType.Text,
-                            true,
-                            CancellationToken.None);
+        while (true)
+        {
+            if(ws.State == WebSocketState.Open)
+            {
+                await ws.SendAsync(arraySegment,
+                WebSocketMessageType.Text,
+                true,
+                CancellationToken.None);
+            }
+            else if(ws.State != WebSocketState.Closed || ws.State != WebSocketState.Open)
+            {
+                break;
+            }
+
+            Thread.Sleep(500);
+        }
     }
     else
     {
