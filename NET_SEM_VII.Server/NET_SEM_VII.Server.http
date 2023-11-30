@@ -1,0 +1,6 @@
+@NET_SEM_VII.Server_HostAddress = http://localhost:5252
+
+GET {{NET_SEM_VII.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
