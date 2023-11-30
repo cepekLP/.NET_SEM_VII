@@ -1,6 +1,6 @@
 # .NET_SEM_VII
 
-#TODO
+# TODO
 1. Serwer backend
 2. Integracja MQTT z serwerem
 3. Integracja mongoDB z serwerem
