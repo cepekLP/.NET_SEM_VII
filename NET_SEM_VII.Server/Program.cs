@@ -5,18 +5,17 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+Console.WriteLine(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.WebHost.UseUrls("https://localhost:6969");
+/*builder.WebHost.UseUrls("https://localhost:8080");*/
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseWebSockets();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\NET_SEM_VII.Server.props" />
-</Project>
