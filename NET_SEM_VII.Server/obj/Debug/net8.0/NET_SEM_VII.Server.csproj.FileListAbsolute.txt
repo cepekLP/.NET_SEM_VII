@@ -33,3 +33,4 @@ C:\Users\Patryk\source\repos\NET_SEM_VII\NET_SEM_VII.Server\obj\Debug\net8.0\ref
 C:\Users\Patryk\source\repos\NET_SEM_VII\NET_SEM_VII.Server\obj\Debug\net8.0\NET_SEM_VII.Server.pdb
 C:\Users\Patryk\source\repos\NET_SEM_VII\NET_SEM_VII.Server\obj\Debug\net8.0\NET_SEM_VII.Server.genruntimeconfig.cache
 C:\Users\Patryk\source\repos\NET_SEM_VII\NET_SEM_VII.Server\obj\Debug\net8.0\ref\NET_SEM_VII.Server.dll
+C:\Users\Patryk\source\repos\NET_SEM_VII\NET_SEM_VII.Server\obj\Debug\net8.0\NET_SEM_VII.Server.sourcelink.json

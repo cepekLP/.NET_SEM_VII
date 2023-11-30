@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NET_SEM_VII.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bebb50cf67795afb3df7a1c10f4a709582d55fdf")]
 [assembly: System.Reflection.AssemblyProductAttribute("NET_SEM_VII.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NET_SEM_VII.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
