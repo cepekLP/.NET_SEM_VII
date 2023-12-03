@@ -8,7 +8,10 @@ const WS_URL = 'wss://localhost:6969/ws';
 function App() {
     useWebSocket(WS_URL, {
         onOpen: () => {
-            console.log('WebSocket connection established.');
+            console.log('WebSocket connection established. on 6969');
+        },
+        onmessage: () => {
+            console.log("Message Received!")
         }
     });
 

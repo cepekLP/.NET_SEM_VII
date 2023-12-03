@@ -8,8 +8,6 @@
     <SpaRoot>..\net_sem_vii.client</SpaRoot>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
     <SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
-    <UserSecretsId>6d8fcd2b-02e6-4532-b099-f85d66c2f394</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>

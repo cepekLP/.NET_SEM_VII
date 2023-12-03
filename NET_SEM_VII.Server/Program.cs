@@ -10,7 +10,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.WebHost.UseUrls("https://localhost:6969");
+/*builder.WebHost.UseUrls("https://localhost:6969");*/
 var app = builder.Build();
 
 app.UseDefaultFiles();
@@ -42,6 +42,7 @@ if (context.WebSockets.IsWebSocketRequest)
         {
             if(ws.State == WebSocketState.Open)
             {
+                Console.WriteLine("Sending message!");
                 await ws.SendAsync(arraySegment,
                 WebSocketMessageType.Text,
                 true,
