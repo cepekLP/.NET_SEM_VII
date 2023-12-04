@@ -1,3 +1,4 @@
+using NET_SEM_VII.Server.Controllers;
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
@@ -61,4 +62,6 @@ if (context.WebSockets.IsWebSocketRequest)
         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
     }
 });
+var mqqttController = new MQTTController();
+mqqttController.Init();
 await app.RunAsync();
