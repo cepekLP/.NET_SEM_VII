@@ -1,3 +1,4 @@
+using NET_SEM_VII.Server.Controllers;
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
@@ -5,18 +6,17 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+Console.WriteLine(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.WebHost.UseUrls("https://localhost:6969");
+/*builder.WebHost.UseUrls("https://localhost:6969");*/
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseWebSockets();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -61,4 +61,6 @@ if (context.WebSockets.IsWebSocketRequest)
         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
     }
 });
+var mqqttController = new MQTTController();
+mqqttController.Init();
 await app.RunAsync();

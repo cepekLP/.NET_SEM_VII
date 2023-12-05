@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NET_SEM_VII.Server", "NET_SEM_VII.Server\NET_SEM_VII.Server.csproj", "{FA8EDF29-28A3-43FC-AFAF-830AE3AFF548}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET_SEM_VII.Server", "NET_SEM_VII.Server\NET_SEM_VII.Server.csproj", "{FA8EDF29-28A3-43FC-AFAF-830AE3AFF548}"
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "net_sem_vii.client", "net_sem_vii.client\net_sem_vii.client.esproj", "{DDF8643C-E9CE-4907-8CA5-3A3705ABE938}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Generator", "Generator\Generator.csproj", "{D1DB9F68-DFBD-425A-B3A8-832C44CE3C70}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,10 @@ Global
 		{DDF8643C-E9CE-4907-8CA5-3A3705ABE938}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDF8643C-E9CE-4907-8CA5-3A3705ABE938}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DDF8643C-E9CE-4907-8CA5-3A3705ABE938}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{D1DB9F68-DFBD-425A-B3A8-832C44CE3C70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1DB9F68-DFBD-425A-B3A8-832C44CE3C70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1DB9F68-DFBD-425A-B3A8-832C44CE3C70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1DB9F68-DFBD-425A-B3A8-832C44CE3C70}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
