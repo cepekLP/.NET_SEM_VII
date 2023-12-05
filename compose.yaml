@@ -25,8 +25,23 @@ services:
     volumes:
       - ~/.aspnet/https:/https:ro
     networks:
-      - node-network
-    
+      - telemetry-network
+    depends_on:
+      - mongodb
+      - mqttbroker
+
+  mqttbroker:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    ports: 
+      - '1883:1883'
+      - '9001:9001'
+    expose: 
+      - 1883
+    volumes:
+      - ./mosquitto:/mosquitto
+    networks:
+      - telemetry-network
   mongodb:
     image: mongo:latest
     container_name: db
@@ -38,10 +53,11 @@ services:
     volumes:
       - dbdata6:/data/db
     networks:
-      - node-network
+      - telemetry-network
 volumes:
   dbdata6:  
+  
 networks:
-  node-network:
-    driver: bridge
+  telemetry-network:
+
 
