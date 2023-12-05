@@ -9,6 +9,13 @@ function App() {
     useWebSocket(WS_URL, {
         onOpen: () => {
             console.log('WebSocket connection established.');
+        },
+        onmessage: (event) => {
+            try {
+                console.log(event.data);
+            } catch (err) {
+                console.log(err);
+            }
         }
     });
 

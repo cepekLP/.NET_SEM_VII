@@ -3,7 +3,7 @@
 "ServerUrl": "https://localhost:5173",
 "RedirectUrl": "",
 "LaunchCommand": "npm run dev",
-"WorkingDirectory": "C:\\Users\\Patryk\\source\\repos\\NET_SEM_VII\\NET_SEM_VII.Server\\..\\net_sem_vii.client",
+"WorkingDirectory": "C:\\Users\\Karol\\Documents\\GitHub\\.NET_SEM_VII\\NET_SEM_VII.Server\\..\\net_sem_vii.client",
 "MaxTimeoutInSeconds": "120",
 "KeepRunning": "false"
 }

@@ -1,13 +1,13 @@
 {
   "Version": 1,
-  "Hash": "ecf8aCdeNtJOiF/cOqAa70wvw9dkfXrMveH7Q4LnQ2Q=",
+  "Hash": "tbzTUWWnSl2zkxO6Zw0Snz124baD6GFC5cgkMXm6POA=",
   "Source": "NET_SEM_VII.Server",
   "BasePath": "_content/NET_SEM_VII.Server",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [
     {
-      "Identity": "C:\\Users\\Patryk\\source\\repos\\NET_SEM_VII\\net_sem_vii.client\\net_sem_vii.client.esproj",
+      "Identity": "C:\\Users\\Karol\\Documents\\GitHub\\.NET_SEM_VII\\net_sem_vii.client\\net_sem_vii.client.esproj",
       "Version": 2,
       "Source": "net_sem_vii.client",
       "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",

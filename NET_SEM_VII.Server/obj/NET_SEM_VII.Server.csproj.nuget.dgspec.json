@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Patryk\\source\\repos\\NET_SEM_VII\\NET_SEM_VII.Server\\NET_SEM_VII.Server.csproj": {}
+    "C:\\Users\\Karol\\Documents\\GitHub\\.NET_SEM_VII\\NET_SEM_VII.Server\\NET_SEM_VII.Server.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Patryk\\source\\repos\\NET_SEM_VII\\NET_SEM_VII.Server\\NET_SEM_VII.Server.csproj": {
+    "C:\\Users\\Karol\\Documents\\GitHub\\.NET_SEM_VII\\NET_SEM_VII.Server\\NET_SEM_VII.Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Patryk\\source\\repos\\NET_SEM_VII\\NET_SEM_VII.Server\\NET_SEM_VII.Server.csproj",
+        "projectUniqueName": "C:\\Users\\Karol\\Documents\\GitHub\\.NET_SEM_VII\\NET_SEM_VII.Server\\NET_SEM_VII.Server.csproj",
         "projectName": "NET_SEM_VII.Server",
-        "projectPath": "C:\\Users\\Patryk\\source\\repos\\NET_SEM_VII\\NET_SEM_VII.Server\\NET_SEM_VII.Server.csproj",
-        "packagesPath": "C:\\Users\\Patryk\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Patryk\\source\\repos\\NET_SEM_VII\\NET_SEM_VII.Server\\obj\\",
+        "projectPath": "C:\\Users\\Karol\\Documents\\GitHub\\.NET_SEM_VII\\NET_SEM_VII.Server\\NET_SEM_VII.Server.csproj",
+        "packagesPath": "C:\\Users\\Karol\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Karol\\Documents\\GitHub\\.NET_SEM_VII\\NET_SEM_VII.Server\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Patryk\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Karol\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
