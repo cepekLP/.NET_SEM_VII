@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace NET_SEM_VII.Server.db
@@ -14,7 +15,7 @@ namespace NET_SEM_VII.Server.db
             var client = new MongoClient("mongodb://root:rootpassword@db:27017");
             //var client = new MongoClient("mongodb://localhost:27017");
             _db = client.GetDatabase("db");
-            DropCollection();
+           // DropCollection();
             CreateCollection();
             Entities = _db.GetCollection<Entity>(collectionName);
         }
@@ -45,14 +46,22 @@ namespace NET_SEM_VII.Server.db
         {
             return await Entities.Find(_ => true).ToListAsync();
         }
-        public async Task<List<Entity>> GetLastHundred(string type, string id)
+        public List<Entity> GetLastHundred(string id)
         {
-            
-            return await Entities.Find(e => e.SensorType == type && e.SensorId == id).ToListAsync();
+            var builderSorter = Builders<Entity>.Sort;
+            SortDefinition<Entity> sort = builderSorter.Ascending("Date");
+
+            return Entities.Find(e => e.SensorType == id).SortBy(e => e.Date).ToList().Take(100).ToList();
         }  
-        public async Task<List<Entity>> getWithFilters(string? type, string? id, DateTime? minDate = null, DateTime? maxDate = null)
+        public async Task<List<Entity>> GetWithFiltersAndSort(string? type, string? id, DateTime? minDate = null, DateTime? maxDate = null,string sortOrder = "Ascending", string? sortBy = null)
         {
             var builder = Builders<Entity>.Filter;
+            SortDefinition<Entity>? a;
+            if (sortBy != null)
+            {
+                var builderSorter = Builders<Entity>.Sort;
+                a =  builderSorter.Ascending(sortBy);
+            }
             var filter = builder.Eq(x => x.SensorType,type) & builder.Eq(x=> x.SensorId,id) & builder.Lte("Date", maxDate ?? DateTime.MaxValue) & builder.Gte("Date", minDate ?? DateTime.MinValue);
             return await Entities.Find(filter).ToListAsync();
             

@@ -9,6 +9,12 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 SensorsService sensorsService = new SensorsService();
+var ent = new Entity();
+ent.SensorId = "test";
+ent.Value = 1;
+ent.Date = DateTime.Now;
+ent.SensorType = "test";
+sensorsService.SaveEntity(ent);
 var json = JsonSerializer.Serialize(sensorsService.GetAllEntities().Result);
 Console.WriteLine(json);
 //Thread.Sleep(1000);
@@ -41,6 +47,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
+var mqqttController = new MQTTController();
 
 app.Map("/ws", async context => {
 if (context.WebSockets.IsWebSocketRequest)
@@ -48,6 +55,8 @@ if (context.WebSockets.IsWebSocketRequest)
         using var ws = await context.WebSockets.AcceptWebSocketAsync();
         //Get data from db that where there before initialization
         string startindData = JsonSerializer.Serialize(sensorsService.GetAllEntities().Result);
+        Console.WriteLine("New socket connected sending data stored in db: ");
+        Console.WriteLine(startindData);
         if(ws.State == WebSocketState.Open)
         {
             await ws.SendAsync(Encoding.UTF8.GetBytes(json),
@@ -58,11 +67,21 @@ if (context.WebSockets.IsWebSocketRequest)
 
         while (true)
         {
+            mqqttController.ApplicationMessageReceivedAsync += e =>
+            {
+                //e -> sensorType
+                var result = sensorsService.GetLastHundred(e);
+                Console.WriteLine("New data incame");
+                Console.WriteLine(e);
+                Console.WriteLine(result.ToString());
+                Console.WriteLine(JsonSerializer.Serialize(result));
+                return Task.CompletedTask;
+            };
             if (ws.State != WebSocketState.Closed || ws.State != WebSocketState.Open)
             {
                 break;
             }
-            Thread.Sleep(500);
+            //Thread.Sleep(500);
         }
     }
     else
@@ -70,12 +89,6 @@ if (context.WebSockets.IsWebSocketRequest)
         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
     }
 });
-var mqqttController = new MQTTController();
-mqqttController.ApplicationMessageReceivedAsync += e =>
-{
-    //e -> sensorType
-    Console.WriteLine(e);
-    return Task.CompletedTask;
-};
+
 
 await app.RunAsync();
