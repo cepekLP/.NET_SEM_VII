@@ -13,11 +13,11 @@ namespace Generator
 {
     internal class WheelSpeedSensor : Sensor
     {
-              public float WheelSpeed { get; set; }
+        public float WheelSpeed { get; set; }
         public WheelSpeedSensor(int id, float dataFrequencyHz, int minValue, int maxValue, bool timerEnabled = true) :
-            base(id, dataFrequencyHz, "WheelSpeed", minValue, maxValue,timerEnabled)
+            base(id, dataFrequencyHz, "WheelSpeed", minValue, maxValue, timerEnabled)
         {
-          
+
         }
 
         protected override void GenerateData()
@@ -25,7 +25,7 @@ namespace Generator
             WheelSpeed = Random.Shared.Next(MinValue * 10, MaxValue * 10) / 10.0f;
             PublishData();
         }
-       
+
         protected override string GetDataAsString()
         {
             return WheelSpeed.ToString();

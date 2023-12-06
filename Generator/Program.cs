@@ -13,14 +13,14 @@
             for (int i = 0; i < 4; i++)
             {
                 sensors[i] = new WheelSpeedSensor(i, WheelSpeedSensorFrequency, 0, 100);
-                sensors[i+4] = new DamperPositionSensor(i, DamperPositionSensorFrequency,
+                sensors[i + 4] = new DamperPositionSensor(i, DamperPositionSensorFrequency,
                     0, 100);
-                sensors[i+8] = new RideHeightSensor(i, RideHeightSensorFrequency, 0, 10);
-                sensors[i+12] = new WheelTemperatureSensor(i, WheelTemperatureSensorFrequency,
+                sensors[i + 8] = new RideHeightSensor(i, RideHeightSensorFrequency, 0, 10);
+                sensors[i + 12] = new WheelTemperatureSensor(i, WheelTemperatureSensorFrequency,
                                        0, 150);
             }
 
-            /* create one sensor with specific value */ 
+            /* create one sensor with specific value */
             /*
             var sensor = new WheelSpeedSensor(0, 1, 0, 100, false);
             sensor.WheelSpeed = 50;

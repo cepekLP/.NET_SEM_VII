@@ -16,7 +16,7 @@ namespace Generator
 
         protected override void GenerateData()
         {
-            RideHeight = Random.Shared.Next(MinValue*100, MaxValue*100) /100.0f;
+            RideHeight = Random.Shared.Next(MinValue * 100, MaxValue * 100) / 100.0f;
             PublishData();
         }
 
