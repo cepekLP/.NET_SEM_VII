@@ -10,7 +10,7 @@ namespace NET_SEM_VII.Server.db
         [JsonIgnore]
         public ObjectId Id { get; set; }
 
-        public DateTime Date { get; set; } = DateTime.MinValue;
+        public DateTime Date { get; set; } = DateTime.Now;
         public string SensorType { get; set; } = null!;
 
         public string? SensorId { get; set; } = null!;

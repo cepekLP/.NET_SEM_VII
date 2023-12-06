@@ -45,6 +45,18 @@ namespace NET_SEM_VII.Server.db
         {
             return await Entities.Find(_ => true).ToListAsync();
         }
+        public async Task<List<Entity>> GetLastHundred(string type, string id)
+        {
+            
+            return await Entities.Find(e => e.SensorType == type && e.SensorId == id).ToListAsync();
+        }  
+        public async Task<List<Entity>> getWithFilters(string? type, string? id, DateTime? minDate = null, DateTime? maxDate = null)
+        {
+            var builder = Builders<Entity>.Filter;
+            var filter = builder.Eq(x => x.SensorType,type) & builder.Eq(x=> x.SensorId,id) & builder.Lte("Date", maxDate ?? DateTime.MaxValue) & builder.Gte("Date", minDate ?? DateTime.MinValue);
+            return await Entities.Find(filter).ToListAsync();
+            
+        }
 
         public async Task<List<Entity>> GetAllEntitiesByType(string type)
         {

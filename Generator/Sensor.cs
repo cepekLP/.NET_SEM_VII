@@ -26,7 +26,7 @@ namespace Generator
             this.Type = type;
             this.MinValue = minValue;
             this.MaxValue = maxValue;
-            timer = new System.Timers.Timer(1000.0f / dataFrequencyHz);
+            timer = new System.Timers.Timer(10*1000.0f / dataFrequencyHz);
             timer.Elapsed += (sender, e) => GenerateData();
             timer.AutoReset = true;
             timer.Enabled = timerEnabled;

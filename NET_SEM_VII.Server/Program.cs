@@ -46,23 +46,22 @@ app.Map("/ws", async context => {
 if (context.WebSockets.IsWebSocketRequest)
     {
         using var ws = await context.WebSockets.AcceptWebSocketAsync();
-        var message = "Hello World!";
-        var bytes = Encoding.UTF8.GetBytes(message);
-        var arraySegment = new ArraySegment<byte>(bytes, 0, bytes.Length);
-        while (true)
+        //Get data from db that where there before initialization
+        string startindData = JsonSerializer.Serialize(sensorsService.GetAllEntities().Result);
+        if(ws.State == WebSocketState.Open)
         {
-            if(ws.State == WebSocketState.Open)
-            {
-                await ws.SendAsync(arraySegment,
+            await ws.SendAsync(Encoding.UTF8.GetBytes(json),
                 WebSocketMessageType.Text,
                 true,
                 CancellationToken.None);
-            }
-            else if(ws.State != WebSocketState.Closed || ws.State != WebSocketState.Open)
+        }
+
+        while (true)
+        {
+            if (ws.State != WebSocketState.Closed || ws.State != WebSocketState.Open)
             {
                 break;
             }
-
             Thread.Sleep(500);
         }
     }
