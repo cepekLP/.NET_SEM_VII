@@ -64,23 +64,22 @@ if (context.WebSockets.IsWebSocketRequest)
                 true,
                 CancellationToken.None);
         }
-
+        mqqttController.ApplicationMessageReceivedAsync += e =>
+        {
+            //e -> sensorType
+            var result = sensorsService.GetLastHundred(e);
+            Console.WriteLine("New data incame");
+            Console.WriteLine("Sensor id=" + e);
+            Console.WriteLine(JsonSerializer.Serialize(result));
+            ws.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(result)),
+                    WebSocketMessageType.Text,
+                    true,
+                    CancellationToken.None);
+            return Task.CompletedTask;
+        };
         while (true)
         {
-            mqqttController.ApplicationMessageReceivedAsync += e =>
-            {
-                //e -> sensorType
-                var result = sensorsService.GetLastHundred(e);
-                Console.WriteLine("New data incame");
-                Console.WriteLine(e);
-                Console.WriteLine(result.ToString());
-                Console.WriteLine(JsonSerializer.Serialize(result));
-                ws.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(result)),
-                        WebSocketMessageType.Text,
-                        true,
-                        CancellationToken.None);
-                return Task.CompletedTask;
-            };
+
             if (ws.State != WebSocketState.Closed || ws.State != WebSocketState.Open)
             {
                 break;
