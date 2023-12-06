@@ -17,10 +17,13 @@ namespace NET_SEM_VII.Server.Controllers
         MqttFactory? mqttFactory;
         IMqttClient? mqttClient;
         SensorsService sensorsService;
+
+        public event Func<String, Task>? ApplicationMessageReceivedAsync;
         public MQTTController()
         {
             SubscribeTopics();
             sensorsService = new SensorsService();
+            ApplicationMessageReceivedAsync = null;
         }
 
         public async void SubscribeTopics()
@@ -77,9 +80,11 @@ namespace NET_SEM_VII.Server.Controllers
                 entity.Date = DateTime.Now;
 
                 sensorsService.SaveEntity(entity);
-
-                //database.GetAllEntities().Result.ForEach(en => Console.WriteLine(en.ToString()));
-                Console.WriteLine(entity.ToString());
+                if (ApplicationMessageReceivedAsync != null)
+                {
+                    ApplicationMessageReceivedAsync(entity.SensorType);
+                }
+                //Console.WriteLine(entity.ToString());
 
                 return Task.CompletedTask;
             };

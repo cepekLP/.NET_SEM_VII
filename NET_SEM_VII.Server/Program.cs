@@ -71,4 +71,11 @@ if (context.WebSockets.IsWebSocketRequest)
     }
 });
 var mqqttController = new MQTTController();
+mqqttController.ApplicationMessageReceivedAsync += e =>
+{
+    //e -> sensorType
+    Console.WriteLine(e);
+    return Task.CompletedTask;
+};
+
 await app.RunAsync();
