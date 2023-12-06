@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 import './App.css';
-
+import DataTable from 'primereact/datatable'
 
 const WS_URL = 'wss://localhost:6969/ws';
 

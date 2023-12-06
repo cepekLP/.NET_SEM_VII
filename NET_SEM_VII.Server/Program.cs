@@ -1,11 +1,16 @@
+using MongoDB.Bson.IO;
 using NET_SEM_VII.Server;
 using NET_SEM_VII.Server.Controllers;
+using NET_SEM_VII.Server.db;
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-//Database db = new Database();
-//db.Test();
+SensorsService sensorsService = new SensorsService();
+var json = JsonSerializer.Serialize(sensorsService.GetAllEntities().Result);
+Console.WriteLine(json);
 //Thread.Sleep(1000);
 
 var builder = WebApplication.CreateBuilder(args);

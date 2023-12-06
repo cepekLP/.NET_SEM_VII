@@ -6,6 +6,7 @@ using MQTTnet.Client;
 using MQTTnet.Formatter;
 using MQTTnet.Packets;
 using MQTTnet.Protocol;
+using NET_SEM_VII.Server.db;
 
 
 

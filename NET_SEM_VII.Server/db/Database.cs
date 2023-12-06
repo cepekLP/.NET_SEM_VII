@@ -1,7 +1,7 @@
 ﻿using MongoDB.Driver;
 using System.ComponentModel;
 
-namespace NET_SEM_VII.Server
+namespace NET_SEM_VII.Server.db
 {
     public class Database
     {
@@ -39,7 +39,7 @@ namespace NET_SEM_VII.Server
             Thread.Sleep(1000);
             var ListOfEntities = await GetAllEntities();
             Console.WriteLine("Entities:");
-            foreach(var en in ListOfEntities)
+            foreach (var en in ListOfEntities)
             {
                 Console.WriteLine(en.ToString());
             }
