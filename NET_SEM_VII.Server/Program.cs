@@ -48,7 +48,6 @@ if (context.WebSockets.IsWebSocketRequest)
         {
             if(ws.State == WebSocketState.Open)
             {
-                Console.WriteLine("Sending message!");
                 await ws.SendAsync(arraySegment,
                 WebSocketMessageType.Text,
                 true,
