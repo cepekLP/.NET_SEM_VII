@@ -48,7 +48,6 @@ app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
 var mqqttController = new MQTTController();
-
 app.Map("/ws", async context => {
 if (context.WebSockets.IsWebSocketRequest)
     {
@@ -77,14 +76,15 @@ if (context.WebSockets.IsWebSocketRequest)
                     CancellationToken.None);
             return Task.CompletedTask;
         };
+       
         while (true)
         {
-
-            if (ws.State != WebSocketState.Closed || ws.State != WebSocketState.Open)
+            if (ws.State != WebSocketState.Open)
             {
+                Console.WriteLine("Socket closed " + ws.State.ToString());
                 break;
             }
-            //Thread.Sleep(500);
+            Thread.Sleep(100);            
         }
     }
     else
