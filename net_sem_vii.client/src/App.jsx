@@ -29,10 +29,10 @@ function App() {
     const [loading, setLoading] = useState(false);
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const [types] = useState([
-        { name: 'RideHeight' },
-        { name: 'WheelSpeed',},
-        { name: 'WheelTemperature',},
-        { name: 'DamperPosition' },
+        'RideHeight',
+        'WheelSpeed',
+        'WheelTemperature',
+        'DamperPosition' 
     ]);
 
     //CHART PART
@@ -48,7 +48,14 @@ function App() {
         },
         onMessage: (event) => {
             try {
-                console.log(event.data);
+                //console.log(event.data);
+                const newData = JSON.parse(event.data);
+
+                setCustomers(newData.map((d) => {
+                    d.Date = new Date(d.Date);
+                    return d;
+                }));
+                
                 //setCustomers()
             } catch (err) {
                 console.log(err);
@@ -58,10 +65,10 @@ function App() {
 
 
     useEffect(() => {
-        CustomerService.getCustomersMedium().then((data) => {
-            setCustomers(getCustomers(data));
-            setLoading(false);
-        });
+        // CustomerService.getCustomersMedium().then((data) => {
+        //     setCustomers(getCustomers(data));
+        //     setLoading(false);
+        // });
 
         initFilters();
 
@@ -125,7 +132,7 @@ function App() {
 
     const getCustomers = (data) => {
         return [...(data || [])].map((d) => {
-            d.date = new Date(d.date);
+            d.Date = new Date(d.Date);
 
             return d;
         });
@@ -160,10 +167,10 @@ function App() {
     const initFilters = () => {
         setFilters({
             global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-            name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+            SensorId: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
             type: { value: null, matchMode: FilterMatchMode.IN },
-            date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
-            value: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+            Date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
+            Value: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
         });
         setGlobalFilterValue('');
     };
@@ -197,25 +204,26 @@ function App() {
 
         return (
             <div className="flex align-items-center gap-2">
-                <span>{type.name}</span>
+                <span>{type}</span>
             </div>
         );
     };
 
     const typeFilterTemplate = (options) => {
+        console.log(options);
         return <MultiSelect value={options.value} options={types} itemTemplate={typesItemTemplate} onChange={(e) => options.filterCallback(e.value)} optionLabel="name" placeholder="Any" className="p-column-filter" />;
     };
 
     const typesItemTemplate = (option) => {
         return (
             <div className="flex align-items-center gap-2">
-                <span>{option.name}</span>
+                <span>{option}</span>
             </div>
         );
     };
 
     const dateBodyTemplate = (rowData) => {
-        return formatDate(rowData.date);
+        return formatDate(rowData.Date);
     };
 
     const dateFilterTemplate = (options) => {
@@ -223,7 +231,7 @@ function App() {
     };
 
     const valueBodyTemplate = (rowData) => {
-        return formatValue(rowData.value);
+        return formatValue(rowData.Value);
     };
 
     const valueFilterTemplate = (options) => {
@@ -234,12 +242,12 @@ function App() {
     return (
         <div className="card">
             <DataTable value={customers} showGridlines loading={loading} dataKey="id" ref={dt}
-                    filters={filters} globalFilterFields={['name','type.name', 'value']} header={header} emptyMessage="No entires found.">
-                <Column field="name" header="Name" filter filterPlaceholder="Search by name" style={{ minWidth: '12rem' }} />
+                    filters={filters} globalFilterFields={['SensorId','type', 'Value']} header={header} emptyMessage="No entires found.">
+                <Column field="SensorId" header="SensorId" filter filterPlaceholder="Search by SensorId" style={{ minWidth: '12rem' }} />
                 <Column header="Type" filterField="type" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }} style={{ minWidth: '14rem' }}
                     body={typeBodyTemplate} filter filterElement={typeFilterTemplate} />
-                <Column header="Date" filterField="date" dataType="date" style={{ minWidth: '10rem' }} body={dateBodyTemplate} filter filterElement={dateFilterTemplate} />
-                <Column header="Value" filterField="value" dataType="numeric" style={{ minWidth: '10rem' }} body={valueBodyTemplate} filter filterElement={valueFilterTemplate} />
+                <Column header="Date" filterField="Date" dataType="date" style={{ minWidth: '10rem' }} body={dateBodyTemplate} filter filterElement={dateFilterTemplate} />
+                <Column header="Value" filterField="Value" dataType="numeric" style={{ minWidth: '10rem' }} body={valueBodyTemplate} filter filterElement={valueFilterTemplate} />
             </DataTable>
 
             <Chart type="line" data={chartData} options={chartOptions} />

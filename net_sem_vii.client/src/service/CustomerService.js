@@ -3,33 +3,27 @@ export const CustomerService = {
         return [
             {
                 id: 1000,
-                name: 'James Butt',
-                date: '2015-09-13',
-                type: 
-                {
-                    name: 'DamperPosition'
-                },
-                value: 70663
+                SensorId: 'James Butt',
+                Date: '2015-09-13',
+                type: 'WheelTemperature',
+                Value: 70663
             },
             {
                 id: 1001,
-                name: 'Josephine Darakjy',
-                date: '2019-02-09',
+                SensorId: 'Josephine Darakjy',
+                Date: '2019-02-09',
                 activity: 0,
-                type: {
-                    name: 'WheelTemperature',
-                },
-                value: 82429
+                type: 'WheelTemperature',
+                Value: 82429
             },
             {
                 id: 1002,
-                name: 'Art Venere',
-                date: '2017-05-13',
+                SensorId: 'Art Venere',
+
+                Date: '2017-05-13',
                 activity: 63,
-                type: {
-                    name: 'WheelSpeed',
-                },
-                value: 28334
+                type: 'WheelTemperature',
+                Value: 28334
             },
         ];
     },
