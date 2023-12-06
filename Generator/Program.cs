@@ -2,6 +2,7 @@
 {
     public class Program
     {
+        const float DataPerMinuteToHz = 1.0f / 60.0f;
         public static void Main(string[] args)
         {
             Sensor[] sensors = new Sensor[16];
