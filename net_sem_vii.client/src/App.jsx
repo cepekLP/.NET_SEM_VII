@@ -18,7 +18,6 @@ import { CustomerService } from './service/CustomerService';
 import { Chart } from 'primereact/chart';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import './App.css';
-import DataTable from 'primereact/datatable'
 
 const WS_URL = 'wss://localhost:6969/ws';
 
@@ -47,7 +46,7 @@ function App() {
         onOpen: () => {
             console.log('WebSocket connection established.');
         },
-        onmessage: (event) => {
+        onMessage: (event) => {
             try {
                 console.log(event.data);
                 //setCustomers()
