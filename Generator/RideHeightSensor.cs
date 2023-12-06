@@ -9,7 +9,7 @@ namespace Generator
     internal class RideHeightSensor : Sensor
     {
         public float RideHeight;
-        public RideHeightSensor(int id, int dataFrequencyHz, int minValue, int maxValue, bool timerEnabled = true) :
+        public RideHeightSensor(int id, float dataFrequencyHz, int minValue, int maxValue, bool timerEnabled = true) :
             base(id, dataFrequencyHz, "RideHeight", minValue, maxValue, timerEnabled)
         {
         }

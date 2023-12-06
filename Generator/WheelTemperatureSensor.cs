@@ -9,7 +9,7 @@ namespace Generator
     internal class WheelTemperatureSensor : Sensor
     {
         public int WheelTemperature;
-        public WheelTemperatureSensor(int id, int dataFrequencyHz, int minValue, int maxValue, bool timerEnabled = true) :
+        public WheelTemperatureSensor(int id, float dataFrequencyHz, int minValue, int maxValue, bool timerEnabled = true) :
             base(id, dataFrequencyHz, "WheelTemperature", minValue, maxValue, timerEnabled)
         {
         }

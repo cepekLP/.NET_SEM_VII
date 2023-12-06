@@ -14,7 +14,7 @@ namespace Generator
     internal class WheelSpeedSensor : Sensor
     {
               public float WheelSpeed { get; set; }
-        public WheelSpeedSensor(int id, int dataFrequencyHz, int minValue, int maxValue, bool timerEnabled = true) :
+        public WheelSpeedSensor(int id, float dataFrequencyHz, int minValue, int maxValue, bool timerEnabled = true) :
             base(id, dataFrequencyHz, "WheelSpeed", minValue, maxValue,timerEnabled)
         {
           

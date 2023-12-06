@@ -5,10 +5,10 @@
         public static void Main(string[] args)
         {
             Sensor[] sensors = new Sensor[16];
-            int WheelSpeedSensorFrequency = 1;
-            int DamperPositionSensorFrequency = 1;
-            int RideHeightSensorFrequency = 1;
-            int WheelTemperatureSensorFrequency = 1;
+            float WheelSpeedSensorFrequency = 1.0f;
+            float DamperPositionSensorFrequency = 1.0f;
+            float RideHeightSensorFrequency = 1.0f;
+            float WheelTemperatureSensorFrequency = 0.25f;
 
             for (int i = 0; i < 4; i++)
             {

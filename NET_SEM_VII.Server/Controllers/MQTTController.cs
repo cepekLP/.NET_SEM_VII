@@ -72,12 +72,19 @@ namespace NET_SEM_VII.Server.Controllers
 
             mqttClient.ApplicationMessageReceivedAsync += e =>
             {
-                Console.WriteLine("### RECEIVED APPLICATION MESSAGE ###");
-                Console.WriteLine($"+ Topic = {e.ApplicationMessage.Topic}");
-                Console.WriteLine($"+ Payload = {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
-                Console.WriteLine($"+ QoS = {e.ApplicationMessage.QualityOfServiceLevel}");
-                Console.WriteLine($"+ Retain = {e.ApplicationMessage.Retain}");
-                Console.WriteLine();
+                var entity = new Entity();
+                string[] data = e.ApplicationMessage.ConvertPayloadToString().Split(";");
+                if(data.Length != 3)
+                {
+                    Console.WriteLine($@"DataLenghts == {data.Length}");
+                    return Task.CompletedTask;
+                }
+                entity.SensorId = data[0];
+                entity.Value = float.Parse(data[1].Replace(",", "."));                
+                entity.SensorType = e.ApplicationMessage.Topic.Split("/").Last();
+                entity.Date = DateTime.Now;
+                
+                Console.WriteLine(entity.ToString());
 
                 return Task.CompletedTask;
             };

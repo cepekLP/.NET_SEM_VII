@@ -12,7 +12,7 @@ namespace Generator
     internal class DamperPositionSensor : Sensor
     {
         public int DamperPosition;
-        public DamperPositionSensor(int id, int dataFrequencyHz, int minValue, int maxValue, bool timerEnabled = true) :
+        public DamperPositionSensor(int id, float dataFrequencyHz, int minValue, int maxValue, bool timerEnabled = true) :
             base(id, dataFrequencyHz, "DamperPosition", minValue, maxValue, timerEnabled)
         {
         }

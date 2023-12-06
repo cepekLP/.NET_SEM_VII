@@ -12,21 +12,21 @@ namespace Generator
     internal class Sensor
     {
         public int Id { get; set; }
-        public int DataFrequencyHz { get; set; }
+        public float DataFrequencyHz { get; set; }
         public String Type { get; set; }
         public int MinValue { get; set; }
         public int MaxValue { get; set; }
         protected MqttFactory? mqttFactory;
         protected IMqttClient? mqttClient;
         private System.Timers.Timer timer;
-        public Sensor(int id, int dataFrequencyHz, String type, int minValue, int maxValue, bool timerEnabled = true)
+        public Sensor(int id, float dataFrequencyHz, String type, int minValue, int maxValue, bool timerEnabled = true)
         {
             this.Id = id;
             this.DataFrequencyHz = dataFrequencyHz;
             this.Type = type;
             this.MinValue = minValue;
             this.MaxValue = maxValue;
-            timer = new System.Timers.Timer(1000 / dataFrequencyHz);
+            timer = new System.Timers.Timer(1000.0f / dataFrequencyHz);
             timer.Elapsed += (sender, e) => GenerateData();
             timer.AutoReset = true;
             timer.Enabled = timerEnabled;
