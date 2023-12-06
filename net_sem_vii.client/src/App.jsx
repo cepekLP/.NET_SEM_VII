@@ -46,7 +46,7 @@ function App() {
         onOpen: () => {
             console.log('WebSocket connection established.');
         },
-        onmessage: (event) => {
+        onMessage: (event) => {
             try {
                 console.log(event.data);
                 //setCustomers()
