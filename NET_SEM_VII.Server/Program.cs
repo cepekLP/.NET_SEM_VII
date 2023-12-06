@@ -72,5 +72,4 @@ if (context.WebSockets.IsWebSocketRequest)
     }
 });
 var mqqttController = new MQTTController();
-mqqttController.Init();
 await app.RunAsync();

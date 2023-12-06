@@ -16,22 +16,13 @@ namespace NET_SEM_VII.Server.Controllers
     {
         MqttFactory? mqttFactory;
         IMqttClient? mqttClient;
-        public async Task Init()
+        SensorsService sensorsService;
+        public MQTTController()
         {
-
             SubscribeTopics();
+            sensorsService = new SensorsService();
         }
 
-        private Task Client_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs x)
-        {
-            string topic = x.ApplicationMessage.Topic;
-            string receiveMsg = x.ApplicationMessage.ConvertPayloadToString();
-
-            Console.WriteLine($"Topic: {topic}. Message Received: {receiveMsg}");
-            //...
-
-            return Task.CompletedTask;
-        }
         public async void SubscribeTopics()
         {
             /*
@@ -84,7 +75,10 @@ namespace NET_SEM_VII.Server.Controllers
                 entity.Value = float.Parse(data[1].Replace(",", "."));                
                 entity.SensorType = e.ApplicationMessage.Topic.Split("/").Last();
                 entity.Date = DateTime.Now;
-                
+
+                sensorsService.SaveEntity(entity);
+
+                //database.GetAllEntities().Result.ForEach(en => Console.WriteLine(en.ToString()));
                 Console.WriteLine(entity.ToString());
 
                 return Task.CompletedTask;
