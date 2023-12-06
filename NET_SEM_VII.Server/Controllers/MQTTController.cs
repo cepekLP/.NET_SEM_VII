@@ -6,6 +6,7 @@ using MQTTnet.Client;
 using MQTTnet.Formatter;
 using MQTTnet.Packets;
 using MQTTnet.Protocol;
+using NET_SEM_VII.Server.db;
 
 
 
@@ -15,22 +16,16 @@ namespace NET_SEM_VII.Server.Controllers
     {
         MqttFactory? mqttFactory;
         IMqttClient? mqttClient;
-        public async Task Init()
-        {
+        SensorsService sensorsService;
 
+        public event Func<String, Task>? ApplicationMessageReceivedAsync;
+        public MQTTController()
+        {
             SubscribeTopics();
+            sensorsService = new SensorsService();
+            ApplicationMessageReceivedAsync = null;
         }
 
-        private Task Client_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs x)
-        {
-            string topic = x.ApplicationMessage.Topic;
-            string receiveMsg = x.ApplicationMessage.ConvertPayloadToString();
-
-            Console.WriteLine($"Topic: {topic}. Message Received: {receiveMsg}");
-            //...
-
-            return Task.CompletedTask;
-        }
         public async void SubscribeTopics()
         {
             /*
@@ -51,18 +46,45 @@ namespace NET_SEM_VII.Server.Controllers
                 .WithTopicFilter(
                     f =>
                     {
-                        f.WithTopic("mqttnet/samples/topic/1");
+                        f.WithTopic("mqttnet/WheelSpeed");
+                    })
+                .WithTopicFilter(
+                    f =>
+                    {
+                        f.WithTopic("mqttnet/DamperPosition");
+                    })
+                .WithTopicFilter(
+                    f =>
+                    {
+                        f.WithTopic("mqttnet/RideHeight");
+                    })
+                .WithTopicFilter(
+                    f =>
+                    {
+                        f.WithTopic("mqttnet/WheelTemperature");
                     })
                 .Build();
 
             mqttClient.ApplicationMessageReceivedAsync += e =>
             {
-                Console.WriteLine("### RECEIVED APPLICATION MESSAGE ###");
-                Console.WriteLine($"+ Topic = {e.ApplicationMessage.Topic}");
-                Console.WriteLine($"+ Payload = {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
-                Console.WriteLine($"+ QoS = {e.ApplicationMessage.QualityOfServiceLevel}");
-                Console.WriteLine($"+ Retain = {e.ApplicationMessage.Retain}");
-                Console.WriteLine();
+                var entity = new Entity();
+                string[] data = e.ApplicationMessage.ConvertPayloadToString().Split(";");
+                if(data.Length != 3)
+                {
+                    Console.WriteLine($@"DataLenghts == {data.Length}");
+                    return Task.CompletedTask;
+                }
+                entity.SensorId = data[0];
+                entity.Value = float.Parse(data[1].Replace(",", "."));                
+                entity.SensorType = e.ApplicationMessage.Topic.Split("/").Last();
+                entity.Date = DateTime.Now;
+
+                sensorsService.SaveEntity(entity);
+                if (ApplicationMessageReceivedAsync != null)
+                {
+                    ApplicationMessageReceivedAsync(entity.SensorType);
+                }
+                //Console.WriteLine(entity.ToString());
 
                 return Task.CompletedTask;
             };

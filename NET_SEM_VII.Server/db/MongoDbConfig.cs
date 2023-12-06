@@ -1,4 +1,4 @@
-﻿namespace NET_SEM_VII.Server
+﻿namespace NET_SEM_VII.Server.db
 {
     public class MongoDbConfig
     {

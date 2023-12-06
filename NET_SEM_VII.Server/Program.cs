@@ -1,11 +1,16 @@
+using MongoDB.Bson.IO;
 using NET_SEM_VII.Server;
 using NET_SEM_VII.Server.Controllers;
+using NET_SEM_VII.Server.db;
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-//Database db = new Database();
-//db.Test();
+SensorsService sensorsService = new SensorsService();
+var json = JsonSerializer.Serialize(sensorsService.GetAllEntities().Result);
+Console.WriteLine(json);
 //Thread.Sleep(1000);
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,23 +46,22 @@ app.Map("/ws", async context => {
 if (context.WebSockets.IsWebSocketRequest)
     {
         using var ws = await context.WebSockets.AcceptWebSocketAsync();
-        var message = "Hello World!";
-        var bytes = Encoding.UTF8.GetBytes(message);
-        var arraySegment = new ArraySegment<byte>(bytes, 0, bytes.Length);
-        while (true)
+        //Get data from db that where there before initialization
+        string startindData = JsonSerializer.Serialize(sensorsService.GetAllEntities().Result);
+        if(ws.State == WebSocketState.Open)
         {
-            if(ws.State == WebSocketState.Open)
-            {
-                await ws.SendAsync(arraySegment,
+            await ws.SendAsync(Encoding.UTF8.GetBytes(json),
                 WebSocketMessageType.Text,
                 true,
                 CancellationToken.None);
-            }
-            else if(ws.State != WebSocketState.Closed || ws.State != WebSocketState.Open)
+        }
+
+        while (true)
+        {
+            if (ws.State != WebSocketState.Closed || ws.State != WebSocketState.Open)
             {
                 break;
             }
-
             Thread.Sleep(500);
         }
     }
@@ -67,5 +71,11 @@ if (context.WebSockets.IsWebSocketRequest)
     }
 });
 var mqqttController = new MQTTController();
-mqqttController.Init();
+mqqttController.ApplicationMessageReceivedAsync += e =>
+{
+    //e -> sensorType
+    Console.WriteLine(e);
+    return Task.CompletedTask;
+};
+
 await app.RunAsync();
