@@ -1,7 +1,12 @@
+using NET_SEM_VII.Server;
 using NET_SEM_VII.Server.Controllers;
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
+
+//Database db = new Database();
+//db.Test();
+//Thread.Sleep(1000);
 
 var builder = WebApplication.CreateBuilder(args);
 
