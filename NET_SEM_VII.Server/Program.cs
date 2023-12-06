@@ -59,7 +59,7 @@ if (context.WebSockets.IsWebSocketRequest)
         Console.WriteLine(startindData);
         if(ws.State == WebSocketState.Open)
         {
-            await ws.SendAsync(Encoding.UTF8.GetBytes(json),
+            await ws.SendAsync(Encoding.UTF8.GetBytes(startindData),
                 WebSocketMessageType.Text,
                 true,
                 CancellationToken.None);
@@ -75,6 +75,10 @@ if (context.WebSockets.IsWebSocketRequest)
                 Console.WriteLine(e);
                 Console.WriteLine(result.ToString());
                 Console.WriteLine(JsonSerializer.Serialize(result));
+                ws.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(result)),
+                        WebSocketMessageType.Text,
+                        true,
+                        CancellationToken.None);
                 return Task.CompletedTask;
             };
             if (ws.State != WebSocketState.Closed || ws.State != WebSocketState.Open)
