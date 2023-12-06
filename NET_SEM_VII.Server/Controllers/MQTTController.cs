@@ -51,7 +51,22 @@ namespace NET_SEM_VII.Server.Controllers
                 .WithTopicFilter(
                     f =>
                     {
-                        f.WithTopic("mqttnet/samples/topic/1");
+                        f.WithTopic("mqttnet/WheelSpeed");
+                    })
+                .WithTopicFilter(
+                    f =>
+                    {
+                        f.WithTopic("mqttnet/DamperPosition");
+                    })
+                .WithTopicFilter(
+                    f =>
+                    {
+                        f.WithTopic("mqttnet/RideHeight");
+                    })
+                .WithTopicFilter(
+                    f =>
+                    {
+                        f.WithTopic("mqttnet/WheelTemperature");
                     })
                 .Build();
 
