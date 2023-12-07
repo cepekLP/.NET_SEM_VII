@@ -29,7 +29,14 @@ function App() {
     const [accdata, setAccData] = useState(null);
     const [filters, setFilters] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [dynamicDesktop, setDynDesk] = useState(false);
+
     const [globalFilterValue, setGlobalFilterValue] = useState('');
+
+    const queryParameters = new URLSearchParams(window.location.search);
+    const dynamicDesktopQuery = queryParameters.has("dynamicDesktop");
+
+
     const [types] = useState([
         'RideHeight',
         'WheelSpeed',
@@ -37,6 +44,10 @@ function App() {
         'DamperPosition' 
     ]);
 
+    function checkDynamicDesktop()
+    {  
+        setDynDesk(dynamicDesktopQuery);
+    }
     
 
     //CHART PART
@@ -103,10 +114,8 @@ function App() {
     };
 
     useEffect(() => {
-        // CustomerService.getCustomersMedium().then((data) => {
-        //     setCustomers(getCustomers(data));
-        //     setLoading(false);
-        // });
+
+        checkDynamicDesktop();
 
         initFilters();
 
@@ -314,24 +323,24 @@ function App() {
 
     const header = renderHeader();
     return (
-        <div className="card">
+        <div className="card" style={{visibility: false}}>
             {/* <Chart type="line" data={chartData} options={chartOptions} /> */}
 
+            { dynamicDesktop && <div>
             <DataTable  sortMode="multiple" value={accdata}>
                 <Column field="SensorName" header="Name" sortable/>
                 <Column field="Current" header="Current" sortable/>
                 <Column field="LastH" header="Last avg 100" sortable/>
             </DataTable>
-
+            </div> }
             <p></p>
             <p></p>
 
-            <div>
+            { dynamicDesktop == false && <div>
                 <Button type="button" icon="pi pi-file" rounded onClick={() => exportCSV(false)} data-pr-tooltip="CSV" >CSV</Button>
                 <Button type="button" icon="pi pi-file" rounded onClick={() => exportJSON()} data-pr-tooltip="JSON" >JSON</Button>
-            </div>
-          
-            <DataTable  sortMode="multiple" value={customers} showGridlines loading={loading} dataKey="id" ref={dt} onValueChange={filteredData => newData = filteredData}
+            
+            <DataTable sortMode="multiple" value={customers} showGridlines loading={loading} dataKey="id" ref={dt} onValueChange={filteredData => newData = filteredData}
                     filters={filters} globalFilterFields={['SensorId','SensorType', 'Value']} header={header} emptyMessage="No entires found.">
                 <Column field="SensorId" header="SensorId" filter filterPlaceholder="Search by SensorId" style={{ minWidth: '12rem' }} sortable/>
                 <Column header="SensorType" field="SensorType" filterField="SensorType" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }} style={{ minWidth: '14rem' }}
@@ -339,7 +348,7 @@ function App() {
                 <Column header="Date" field="Date" filterField="Date" dataType="date" style={{ minWidth: '10rem' }} body={dateBodyTemplate} filter filterElement={dateFilterTemplate} sortable/>
                 <Column header="Value" field="Value" filterField="Value" dataType="numeric" style={{ minWidth: '10rem' }} body={valueBodyTemplate} filter filterElement={valueFilterTemplate} sortable/>
             </DataTable>
-
+            </div>} 
            
         </div>
     );
