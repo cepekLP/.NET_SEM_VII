@@ -91,20 +91,21 @@ if (context.WebSockets.IsWebSocketRequest)
                     WebSocketMessageType.Text,
                     true,
                     CancellationToken.None);
-            ws.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(result)),
-                    WebSocketMessageType.Text,
-                    true,
-                    CancellationToken.None);
+            //ws.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(result)),
+            //        WebSocketMessageType.Text,
+            //        true,
+            //        CancellationToken.None);
             return Task.CompletedTask;
         };
         while (true)
         {
 
-            if (ws.State != WebSocketState.Closed || ws.State != WebSocketState.Open)
+            if (ws.State != WebSocketState.Open )
             {
+                Console.WriteLine("Jezyk");
                 break;
             }
-            //Thread.Sleep(500);
+            Thread.Sleep(500);
         }
     }
     else
