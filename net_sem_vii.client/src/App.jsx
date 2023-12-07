@@ -56,7 +56,7 @@ function App() {
 
     const [initialData, setInitialData] = useState({});
 
-    let isFirst = true;
+    const [isFirst, setIsFirst] = useState(true);
 
     useWebSocket(WS_URL, {
         onOpen: () => {
@@ -67,20 +67,22 @@ function App() {
 
                 if(isFirst)
                 {
+                    setIsFirst(false);
                     //console.log(event.data);
                     const newData = JSON.parse(event.data);
-                    
+                    console.log(isFirst);
                     setCustomers(newData.map((d) => {
                         d.Date = new Date(d.Date);
                         return d;
                     }));
 
-                    isFirst = false;
+                    
                 }
                 else
                 {
                     const newData = JSON.parse(event.data);
-                    setAccData(newData);
+                    console.log(newData);
+                    //setAccData(newData);
                 }
                 
                 //setCustomers()
@@ -265,12 +267,16 @@ function App() {
     const valueFilterTemplate = (options) => {
         return <InputNumber value={options.value} onChange={(e) => options.filterCallback(e.value, options.index)}/>;
     };
+
+    ///// CHARTS
+
+    const colors = ["blue", "red", "green", "pink", "cyan", "magenta", "black", "yellow"]
  
     const getFilteredData = (filteredData) =>
     {
         if(filteredData)
         {
-            return types.map(t => {
+            return types.flatMap(t => {
                 return ["0","1","2","3"].map((n)=> {
                     return filteredData.filter(el =>  el.SensorId === n && el.SensorType === t )
                 })
@@ -285,22 +291,43 @@ function App() {
 
     const buildData = (aData) => 
     {
-        const filData = getFilteredData(aData);
-        if(filData[0] && filData[0][0] && filData[0][0][0])
+        const filData2 = getFilteredData(aData.sort((a, b) => { return new Date(a.Date) - new Date(b.Date); }));
+        console.log(filData2);
+        const filData = (filData2.filter((el) => el.length != 0));
+
+
+        if(filData.length)
         {
-            const dataset = filData.map( (e) => {return {label: e[0][0].SensorType + e[0][0].SensorId, data: e[0].map( (d) => d.Value), fill: false,  borderColor: "red",
-            tension: 0.4}});
+            console.log()
+            let i = 0;
+            const dataset = filData.flatMap((e) => {
+                if (e.length) {
+                    i++;
+                    return {
+                        label: e[0].SensorType + e[0].SensorId, data: e.map((d) => d.Value), fill: false, borderColor: documentStyle.getPropertyValue('--' + colors[(i-1)%8] + '-500'),
+                        tension: 0.4
+                    }
+                }
+   
+            });
+
+            if (dataset) {
+                const mData = { labels: filData[0].map((a) => { return a.Date.getHours().toString() +":"+ a.Date.getMinutes() } ), datasets: dataset };
+                console.log(mData);
+                return mData;
+            }
+
             
-            mData = {labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', '8', '9'], dataset: dataset};
-            console.log(mData);
-            return mData;
         }
         else
         {
-            return {};
+            return null;
         }
 
     }
+
+
+    /////// EXPORT
 
     const exportCSV = (selectionOnly) => {
         dt.current.exportCSV({ selectionOnly });
@@ -321,16 +348,18 @@ function App() {
         download(JSON.stringify(newData), 'json.txt', 'text/plain');
     };
 
+
     const header = renderHeader();
     return (
         <div className="card" style={{visibility: false}}>
             {/* <Chart type="line" data={chartData} options={chartOptions} /> */}
 
             { dynamicDesktop && <div>
-            <DataTable  sortMode="multiple" value={accdata}>
-                <Column field="SensorName" header="Name" sortable/>
-                <Column field="Current" header="Current" sortable/>
-                <Column field="LastH" header="Last avg 100" sortable/>
+            <DataTable value={accdata}>
+                <Column field="SensorId" header="SensorId" sortable/>
+                <Column field="SensorType" header="SensorType" sortable/>
+                <Column field="CurrentValue" header="CurrentValue" sortable/>
+                <Column field="AverageValue" header="AverageValue" sortable/>
             </DataTable>
             </div> }
             <p></p>
@@ -340,7 +369,11 @@ function App() {
                 <Button type="button" icon="pi pi-file" rounded onClick={() => exportCSV(false)} data-pr-tooltip="CSV" >CSV</Button>
                 <Button type="button" icon="pi pi-file" rounded onClick={() => exportJSON()} data-pr-tooltip="JSON" >JSON</Button>
             
-            <DataTable sortMode="multiple" value={customers} showGridlines loading={loading} dataKey="id" ref={dt} onValueChange={filteredData => newData = filteredData}
+            <DataTable sortMode="multiple" value={customers} showGridlines loading={loading} dataKey="id" ref={dt} onValueChange={filteredData => {
+                const a = buildData(filteredData); console.log(a); if (a) {
+                    setChartData(a);
+                    }
+                }}
                     filters={filters} globalFilterFields={['SensorId','SensorType', 'Value']} header={header} emptyMessage="No entires found.">
                 <Column field="SensorId" header="SensorId" filter filterPlaceholder="Search by SensorId" style={{ minWidth: '12rem' }} sortable/>
                 <Column header="SensorType" field="SensorType" filterField="SensorType" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }} style={{ minWidth: '14rem' }}
@@ -348,6 +381,7 @@ function App() {
                 <Column header="Date" field="Date" filterField="Date" dataType="date" style={{ minWidth: '10rem' }} body={dateBodyTemplate} filter filterElement={dateFilterTemplate} sortable/>
                 <Column header="Value" field="Value" filterField="Value" dataType="numeric" style={{ minWidth: '10rem' }} body={valueBodyTemplate} filter filterElement={valueFilterTemplate} sortable/>
             </DataTable>
+            <Chart type="line" data={chartData} options={chartOptions} />
             </div>} 
            
         </div>
