@@ -26,6 +26,7 @@ function App() {
 
     const dt = useRef(null);
     const [customers, setCustomers] = useState(null);
+    const [accdata, setAccData] = useState(null);
     const [filters, setFilters] = useState(null);
     const [loading, setLoading] = useState(false);
     const [globalFilterValue, setGlobalFilterValue] = useState('');
@@ -44,6 +45,7 @@ function App() {
 
     const [initialData, setInitialData] = useState({});
 
+    let isFirst = true;
 
     useWebSocket(WS_URL, {
         onOpen: () => {
@@ -51,13 +53,24 @@ function App() {
         },
         onMessage: (event) => {
             try {
-                //console.log(event.data);
-                const newData = JSON.parse(event.data);
 
-                setCustomers(newData.map((d) => {
-                    d.Date = new Date(d.Date);
-                    return d;
-                }));
+                if(isFirst)
+                {
+                    //console.log(event.data);
+                    const newData = JSON.parse(event.data);
+                    
+                    setCustomers(newData.map((d) => {
+                        d.Date = new Date(d.Date);
+                        return d;
+                    }));
+
+                    isFirst = false;
+                }
+                else
+                {
+                    const newData = JSON.parse(event.data);
+                    setAccData(newData);
+                }
                 
                 //setCustomers()
             } catch (err) {
@@ -303,6 +316,15 @@ function App() {
     return (
         <div className="card">
             {/* <Chart type="line" data={chartData} options={chartOptions} /> */}
+
+            <DataTable  sortMode="multiple" value={accdata}>
+                <Column field="SensorName" header="Name" sortable/>
+                <Column field="Current" header="Current" sortable/>
+                <Column field="LastH" header="Last avg 100" sortable/>
+            </DataTable>
+
+            <p></p>
+            <p></p>
 
             <div>
                 <Button type="button" icon="pi pi-file" rounded onClick={() => exportCSV(false)} data-pr-tooltip="CSV" >CSV</Button>
