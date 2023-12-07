@@ -69,7 +69,7 @@ if (context.WebSockets.IsWebSocketRequest)
             //e -> sensorType
             String SensorType = e.Split(",")[0];
             String SensorId = e.Split(",")[1];
-            var result = sensorsService.GetLastHundred(e);
+            var result = sensorsService.GetLastHundred(SensorType);
             var result2 = sensorsService.GetLast100EntitiesByTypeAndID(SensorType, SensorId);
 
             Entity2 entity2 = new Entity2();
@@ -100,11 +100,11 @@ if (context.WebSockets.IsWebSocketRequest)
         while (true)
         {
 
-            if (ws.State != WebSocketState.Closed || ws.State != WebSocketState.Open)
+            if (ws.State != WebSocketState.Open)
             {
                 break;
             }
-            //Thread.Sleep(500);
+            Thread.Sleep(500);
         }
     }
     else
