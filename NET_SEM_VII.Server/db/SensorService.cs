@@ -12,7 +12,7 @@ namespace NET_SEM_VII.Server.db
         private string collectionName = "SensorsData";
         public SensorsService()
         {
-            var client = new MongoClient("mongodb://root:rootpassword@db:27017");
+            var client = new MongoClient("mongodb://root:rootpassword@localhost:27017");
             //var client = new MongoClient("mongodb://localhost:27017");
             _db = client.GetDatabase("db");
            // DropCollection();
