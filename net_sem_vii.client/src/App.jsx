@@ -54,6 +54,8 @@ function App() {
     const [chartData, setChartData] = useState({});
     const [chartOptions, setChartOptions] = useState({});
 
+    const [newData, setNewData] = useState({});
+
     const [initialData, setInitialData] = useState({});
 
     const [isFirst, setIsFirst] = useState(true);
@@ -333,9 +335,6 @@ function App() {
         dt.current.exportCSV({ selectionOnly });
     };
 
-
-    let newData = null;
-
     const exportJSON = () => 
     {  
         function download(content, fileName, contentType) {
@@ -370,6 +369,7 @@ function App() {
                 <Button type="button" icon="pi pi-file" rounded onClick={() => exportJSON()} data-pr-tooltip="JSON" >JSON</Button>
             
             <DataTable sortMode="multiple" value={customers} showGridlines loading={loading} dataKey="id" ref={dt} onValueChange={filteredData => {
+                setNewData(filteredData);
                 const a = buildData(filteredData); console.log(a); if (a) {
                     setChartData(a);
                     }

@@ -15,7 +15,7 @@ namespace NET_SEM_VII.Server.db
             var client = new MongoClient("mongodb://root:rootpassword@localhost:27017");
             //var client = new MongoClient("mongodb://localhost:27017");
             _db = client.GetDatabase("db");
-           // DropCollection();
+            DropCollection();
             CreateCollection();
             Entities = _db.GetCollection<Entity>(collectionName);
         }
@@ -78,7 +78,7 @@ namespace NET_SEM_VII.Server.db
 
         public Task<List<Entity>> GetLast100EntitiesByTypeAndID(string type, string id)
         {
-          return Task.FromResult(Entities.Find(e => e.SensorType == type && e.SensorId == id).SortBy(e => e.Date).ToList().Take(100).ToList());
+          return Task.FromResult(Entities.Find(e => e.SensorType == type && e.SensorId == id).SortByDescending(e => e.Date).ToList().Take(100).ToList());
         }
         public async void SaveEntity(Entity entity)
         {

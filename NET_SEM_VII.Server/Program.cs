@@ -54,7 +54,7 @@ app.Map("/ws", async context => {
     {
         using var ws = await context.WebSockets.AcceptWebSocketAsync();
         //Get data from db that where there before initialization
-        string startindData = JsonSerializer.Serialize(sensorsService.GetAllEntities().Result);
+        string startindData = JsonSerializer.Serialize(sensorsService.GetAllEntities().Result.Take(200).ToList());
         Console.WriteLine("New socket connected sending data stored in db: ");
         Console.WriteLine(startindData);
         if (ws.State == WebSocketState.Open)
