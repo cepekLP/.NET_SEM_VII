@@ -28,4 +28,5 @@ namespace NET_SEM_VII.Server.db
             return $@"{Date.ToString()}, {SensorType},{SensorId}, {Value}";
         }
     }
+
 }

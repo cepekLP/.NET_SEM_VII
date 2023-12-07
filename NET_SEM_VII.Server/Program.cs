@@ -68,9 +68,27 @@ if (context.WebSockets.IsWebSocketRequest)
         {
             //e -> sensorType
             var result = sensorsService.GetLastHundred(e);
+            var result2 = sensorsService.GetLast100EntitiesByTypeAndID(e, "0");
+
+            Entity2 entity2 = new Entity2();
+            entity2.SensorId = "0";
+            entity2.SensorType = e;
+            entity2.CurrentValue = result2.Result[0].Value;
+            entity2.AverageValue = 0;
+            for (int i = 0; i < result2.Result.Count; i++)
+            {
+                entity2.AverageValue += result2.Result[i].Value;
+            }
+            entity2.AverageValue /= result2.Result.Count;
+
             Console.WriteLine("New data incame");
             Console.WriteLine("Sensor id=" + e);
-            Console.WriteLine(JsonSerializer.Serialize(result));
+            //Console.WriteLine(JsonSerializer.Serialize(result));
+            Console.WriteLine(JsonSerializer.Serialize(entity2));
+            ws.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(entity2)),
+                    WebSocketMessageType.Text,
+                    true,
+                    CancellationToken.None);
             ws.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(result)),
                     WebSocketMessageType.Text,
                     true,

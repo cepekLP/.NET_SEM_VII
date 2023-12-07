@@ -75,6 +75,11 @@ namespace NET_SEM_VII.Server.db
         {
             return await Entities.Find(e => e.SensorId == id).ToListAsync();
         }
+
+        public Task<List<Entity>> GetLast100EntitiesByTypeAndID(string type, string id)
+        {
+          return Task.FromResult(Entities.Find(e => e.SensorType == type && e.SensorId == id).SortBy(e => e.Date).ToList().Take(100).ToList());
+        }
         public async void SaveEntity(Entity entity)
         {
             await Entities.InsertOneAsync(entity);
