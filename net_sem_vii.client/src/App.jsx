@@ -82,7 +82,7 @@ function App() {
                 {
                     const newData = JSON.parse(event.data);
                     console.log(newData);
-                    //setAccData(newData);
+                    setAccData(newData);
                 }
                 
                 //setCustomers()

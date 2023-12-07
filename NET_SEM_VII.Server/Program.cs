@@ -50,14 +50,14 @@ app.MapFallbackToFile("/index.html");
 var mqqttController = new MQTTController();
 
 app.Map("/ws", async context => {
-if (context.WebSockets.IsWebSocketRequest)
+    if (context.WebSockets.IsWebSocketRequest)
     {
         using var ws = await context.WebSockets.AcceptWebSocketAsync();
         //Get data from db that where there before initialization
         string startindData = JsonSerializer.Serialize(sensorsService.GetAllEntities().Result);
         Console.WriteLine("New socket connected sending data stored in db: ");
         Console.WriteLine(startindData);
-        if(ws.State == WebSocketState.Open)
+        if (ws.State == WebSocketState.Open)
         {
             await ws.SendAsync(Encoding.UTF8.GetBytes(startindData),
                 WebSocketMessageType.Text,
@@ -67,27 +67,35 @@ if (context.WebSockets.IsWebSocketRequest)
         mqqttController.ApplicationMessageReceivedAsync += e =>
         {
             //e -> sensorType
+            List<Entity2> result3 = new List<Entity2>();
+            String[] SensorTypes = { "WheelSpeed", "WheelTemperature", "RideHeight", "DamperPosition" };
             String SensorType = e.Split(",")[0];
             String SensorId = e.Split(",")[1];
-            var result = sensorsService.GetLastHundred(e);
-            var result2 = sensorsService.GetLast100EntitiesByTypeAndID(SensorType, SensorId);
-
-            Entity2 entity2 = new Entity2();
-            entity2.SensorId = SensorId;
-            entity2.SensorType = SensorType;
-            entity2.CurrentValue = result2.Result[0].Value;
-            entity2.AverageValue = 0;
-            for (int i = 0; i < result2.Result.Count; i++)
+            //var result = sensorsService.GetLastHundred(SensorType);
+            foreach (var SensorT in SensorTypes)
             {
-                entity2.AverageValue += result2.Result[i].Value;
-            }
-            entity2.AverageValue /= result2.Result.Count;
+                for (int i = 0; i < 4; i++)
+                {
+                    var result2 = sensorsService.GetLast100EntitiesByTypeAndID(SensorT, i.ToString());
 
+                    Entity2 entity2 = new Entity2();
+                    entity2.SensorId = i.ToString();
+                    entity2.SensorType = SensorT;
+                    entity2.CurrentValue = result2.Result[0].Value;
+                    entity2.AverageValue = 0;
+                    for (int j = 0; j < result2.Result.Count; j++)
+                    {
+                        entity2.AverageValue += result2.Result[j].Value;
+                    }
+                    entity2.AverageValue /= result2.Result.Count;
+                    result3.Add(entity2);
+                }
+            }
             Console.WriteLine("New data incame");
-            Console.WriteLine("Sensor type=" + SensorType+ " Sensor Id=" +SensorId);
+            Console.WriteLine("Sensor type=" + SensorType + " Sensor Id=" + SensorId);
             //Console.WriteLine(JsonSerializer.Serialize(result));
-            Console.WriteLine(JsonSerializer.Serialize(entity2));
-            ws.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(entity2)),
+            Console.WriteLine(JsonSerializer.Serialize(result3));
+            ws.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(result3)),
                     WebSocketMessageType.Text,
                     true,
                     CancellationToken.None);
@@ -100,9 +108,8 @@ if (context.WebSockets.IsWebSocketRequest)
         while (true)
         {
 
-            if (ws.State != WebSocketState.Open )
+            if (ws.State != WebSocketState.Open)
             {
-                Console.WriteLine("Jezyk");
                 break;
             }
             Thread.Sleep(500);
