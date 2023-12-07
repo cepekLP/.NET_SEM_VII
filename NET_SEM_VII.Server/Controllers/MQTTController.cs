@@ -36,7 +36,7 @@ namespace NET_SEM_VII.Server.Controllers
 
             mqttClient = mqttFactory.CreateMqttClient();
 
-            var mqttClientOptions = new MqttClientOptionsBuilder().WithTcpServer("localhost").Build();
+            var mqttClientOptions = new MqttClientOptionsBuilder().WithTcpServer("mqttbroker").Build();
 
             await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None);
 

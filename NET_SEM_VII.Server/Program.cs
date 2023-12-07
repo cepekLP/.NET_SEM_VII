@@ -49,12 +49,13 @@ app.MapControllers();
 app.MapFallbackToFile("/index.html");
 var mqqttController = new MQTTController();
 
-app.Map("/ws", async context => {
+app.Map("/ws", async context =>
+{
     if (context.WebSockets.IsWebSocketRequest)
     {
         using var ws = await context.WebSockets.AcceptWebSocketAsync();
         //Get data from db that where there before initialization
-        string startindData = JsonSerializer.Serialize(sensorsService.GetAllEntities().Result.Take(200).ToList());
+        string startindData = JsonSerializer.Serialize(sensorsService.GetAllEntities().Result.ToList());
         Console.WriteLine("New socket connected sending data stored in db: ");
         Console.WriteLine(startindData);
         if (ws.State == WebSocketState.Open)
@@ -64,37 +65,37 @@ app.Map("/ws", async context => {
                 true,
                 CancellationToken.None);
         }
+        List<Entity2> result3 = new List<Entity2>();
         mqqttController.ApplicationMessageReceivedAsync += e =>
         {
-            //e -> sensorType
-            List<Entity2> result3 = new List<Entity2>();
+            //e -> sensorType           
             String[] SensorTypes = { "WheelSpeed", "WheelTemperature", "RideHeight", "DamperPosition" };
             String SensorType = e.Split(",")[0];
             String SensorId = e.Split(",")[1];
             //var result = sensorsService.GetLastHundred(SensorType);
-            foreach (var SensorT in SensorTypes)
+            Entity2? entity2 = result3.Find(e => e.SensorId == SensorId && e.SensorType == SensorType);
+            if (entity2 == null)
             {
-                for (int i = 0; i < 4; i++)
-                {
-                    var result2 = sensorsService.GetLast100EntitiesByTypeAndID(SensorT, i.ToString());
-
-                    Entity2 entity2 = new Entity2();
-                    entity2.SensorId = i.ToString();
-                    entity2.SensorType = SensorT;
-                    entity2.CurrentValue = result2.Result[0].Value;
-                    entity2.AverageValue = 0;
-                    for (int j = 0; j < result2.Result.Count; j++)
-                    {
-                        entity2.AverageValue += result2.Result[j].Value;
-                    }
-                    entity2.AverageValue /= result2.Result.Count;
-                    result3.Add(entity2);
-                }
+                entity2 = new Entity2();
+                entity2.SensorId = SensorId;
+                entity2.SensorType = SensorType;
+                result3.Add(entity2);
             }
+
+            var result2 = sensorsService.GetLast100EntitiesByTypeAndID(SensorType, SensorId);         
+                   
+            entity2.CurrentValue = result2.Result[0].Value;
+            entity2.AverageValue = 0;
+            for (int j = 0; j < result2.Result.Count; j++)
+            {
+                entity2.AverageValue += result2.Result[j].Value;
+            }
+            entity2.AverageValue /= result2.Result.Count;
+                
             Console.WriteLine("New data incame");
             Console.WriteLine("Sensor type=" + SensorType + " Sensor Id=" + SensorId);
             //Console.WriteLine(JsonSerializer.Serialize(result));
-            Console.WriteLine(JsonSerializer.Serialize(result3));
+            //  Console.WriteLine(JsonSerializer.Serialize(result3));
             ws.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(result3)),
                     WebSocketMessageType.Text,
                     true,

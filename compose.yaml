@@ -9,26 +9,26 @@
 # https://github.com/docker/awesome-compose
 name: telemetry-app
 services:
- # server:
-  #   build:
-  #     context: .
-  #     target: final
-  #   ports:
-  #     - "6969:6969"
-  #   environment:
-  #     # - ASPNETCORE_HTTPS_PORTS=6969
-  #     # - ASPNETCORE_HTTP_PORTS=696
-  #     - ASPNETCORE_ENVIRONMENT=Development
-  #     - ASPNETCORE_URLS=https://+:6969
-  #     - ASPNETCORE_Kestrel__Certificates__Default__Password=password
-  #     - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-  #   volumes:
-  #     - ~/.aspnet/https:/https:ro
-  #   networks:
-  #     - telemetry-network
-  #   depends_on:
-  #     - mongodb
-  #     - mqttbroker
+  server:
+    build:
+      context: .
+      target: final
+    ports:
+      - "6969:6969"
+    environment:
+      # - ASPNETCORE_HTTPS_PORTS=6969
+      # - ASPNETCORE_HTTP_PORTS=696
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:6969
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ~/.aspnet/https:/https:ro
+    networks:
+      - telemetry-network
+    depends_on:
+      - mongodb
+      - mqttbroker
 
   mqttbroker:
     image: eclipse-mosquitto
