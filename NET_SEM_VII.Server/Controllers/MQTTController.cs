@@ -82,7 +82,7 @@ namespace NET_SEM_VII.Server.Controllers
                 sensorsService.SaveEntity(entity);
                 if (ApplicationMessageReceivedAsync != null)
                 {
-                    ApplicationMessageReceivedAsync(entity.SensorType);
+                    ApplicationMessageReceivedAsync(entity.SensorType+","+entity.SensorId);
                 }
                 //Console.WriteLine(entity.ToString());
 

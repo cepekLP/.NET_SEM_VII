@@ -67,12 +67,14 @@ if (context.WebSockets.IsWebSocketRequest)
         mqqttController.ApplicationMessageReceivedAsync += e =>
         {
             //e -> sensorType
+            String SensorType = e.Split(",")[0];
+            String SensorId = e.Split(",")[1];
             var result = sensorsService.GetLastHundred(e);
-            var result2 = sensorsService.GetLast100EntitiesByTypeAndID(e, "0");
+            var result2 = sensorsService.GetLast100EntitiesByTypeAndID(SensorType, SensorId);
 
             Entity2 entity2 = new Entity2();
-            entity2.SensorId = "0";
-            entity2.SensorType = e;
+            entity2.SensorId = SensorId;
+            entity2.SensorType = SensorType;
             entity2.CurrentValue = result2.Result[0].Value;
             entity2.AverageValue = 0;
             for (int i = 0; i < result2.Result.Count; i++)
@@ -82,7 +84,7 @@ if (context.WebSockets.IsWebSocketRequest)
             entity2.AverageValue /= result2.Result.Count;
 
             Console.WriteLine("New data incame");
-            Console.WriteLine("Sensor id=" + e);
+            Console.WriteLine("Sensor type=" + SensorType+ " Sensor Id=" +SensorId);
             //Console.WriteLine(JsonSerializer.Serialize(result));
             Console.WriteLine(JsonSerializer.Serialize(entity2));
             ws.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(entity2)),
