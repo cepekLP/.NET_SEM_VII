@@ -65,46 +65,62 @@ app.Map("/ws", async context =>
                 true,
                 CancellationToken.None);
         }
-        List<Entity2> result3 = new List<Entity2>();
+        bool isNewDataAvailable = true;
         mqqttController.ApplicationMessageReceivedAsync += e =>
         {
-            //e -> sensorType           
-            String[] SensorTypes = { "WheelSpeed", "WheelTemperature", "RideHeight", "DamperPosition" };
-            String SensorType = e.Split(",")[0];
-            String SensorId = e.Split(",")[1];
-            //var result = sensorsService.GetLastHundred(SensorType);
-            Entity2? entity2 = result3.Find(e => e.SensorId == SensorId && e.SensorType == SensorType);
-            if (entity2 == null)
-            {
-                entity2 = new Entity2();
-                entity2.SensorId = SensorId;
-                entity2.SensorType = SensorType;
-                result3.Add(entity2);
-            }
-
-            var result2 = sensorsService.GetLast100EntitiesByTypeAndID(SensorType, SensorId);         
-                   
-            entity2.CurrentValue = result2.Result[0].Value;
-            entity2.AverageValue = 0;
-            for (int j = 0; j < result2.Result.Count; j++)
-            {
-                entity2.AverageValue += result2.Result[j].Value;
-            }
-            entity2.AverageValue /= result2.Result.Count;
-                
-            Console.WriteLine("New data incame");
-            Console.WriteLine("Sensor type=" + SensorType + " Sensor Id=" + SensorId);
-            //Console.WriteLine(JsonSerializer.Serialize(result));
-            //  Console.WriteLine(JsonSerializer.Serialize(result3));
-            ws.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(result3)),
-                    WebSocketMessageType.Text,
-                    true,
-                    CancellationToken.None);
-            //ws.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(result)),
-            //        WebSocketMessageType.Text,
-            //        true,
-            //        CancellationToken.None);
+            isNewDataAvailable = true;
             return Task.CompletedTask;
+        };
+        System.Timers.Timer timer = new System.Timers.Timer(250);
+        timer.AutoReset = true;
+        timer.Enabled = true;
+        timer.Elapsed += (sender, e) =>
+        {
+            if (isNewDataAvailable)
+            {
+                isNewDataAvailable = false;
+                List<Entity2> result3 = new List<Entity2>();
+                //e -> sensorType           
+                String[] SensorTypes = { "WheelSpeed", "WheelTemperature", "RideHeight", "DamperPosition" };
+                // String SensorType = e.Split(",")[0];
+                //String SensorId = e.Split(",")[1];
+                //var result = sensorsService.GetLastHundred(SensorType);
+                foreach (var SensorT in SensorTypes)
+                {
+                    for (int i = 0; i < 4; i++)
+                    {
+                        var result2 = sensorsService.GetLast100EntitiesByTypeAndID(SensorT, i.ToString());
+
+                        Entity2 entity2 = new Entity2();
+                        entity2.SensorId = i.ToString();
+                        entity2.SensorType = SensorT;
+                        entity2.CurrentValue = result2.Result[0].Value;
+                        entity2.AverageValue = 0;
+                        for (int j = 0; j < result2.Result.Count; j++)
+                        {
+                            entity2.AverageValue += result2.Result[j].Value;
+                        }
+                        entity2.AverageValue /= result2.Result.Count;
+                        result3.Add(entity2);
+                    }
+                }
+
+
+                //Console.WriteLine("New data incame");
+                //  Console.WriteLine("Sensor type=" + SensorType + " Sensor Id=" + SensorId);
+                //Console.WriteLine(JsonSerializer.Serialize(result));
+                //  Console.WriteLine(JsonSerializer.Serialize(result3));
+
+                //ws.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(result)),
+                //        WebSocketMessageType.Text,
+                //        true,
+                //        CancellationToken.None);
+                _ = ws.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(result3)),
+                      WebSocketMessageType.Text,
+                      true,
+                      CancellationToken.None);
+            }
+            //return Task.CompletedTask;
         };
         while (true)
         {
