@@ -19,6 +19,7 @@ import { Chart } from 'primereact/chart';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import './App.css';
 
+
 const WS_URL = 'wss://localhost:6969/ws';
 
 function App() {
@@ -34,6 +35,8 @@ function App() {
         'WheelTemperature',
         'DamperPosition' 
     ]);
+
+    
 
     //CHART PART
     const [chartData, setChartData] = useState({});
@@ -277,13 +280,36 @@ function App() {
 
     }
 
+    const exportCSV = (selectionOnly) => {
+        dt.current.exportCSV({ selectionOnly });
+    };
+
+
+    let newData = null;
+
+    const exportJSON = () => 
+    {  
+        function download(content, fileName, contentType) {
+            var a = document.createElement("a");
+            var file = new Blob([content], {type: contentType});
+            a.href = URL.createObjectURL(file);
+            a.download = fileName;
+            a.click();
+        }
+        download(JSON.stringify(newData), 'json.txt', 'text/plain');
+    };
+
     const header = renderHeader();
     return (
         <div className="card">
+            {/* <Chart type="line" data={chartData} options={chartOptions} /> */}
 
-            <Chart type="line" data={chartData} options={chartOptions} />
-
-            <DataTable  sortMode="multiple" value={customers} showGridlines loading={loading} dataKey="id" ref={dt} onValueChange={filteredData => buildData(filteredData)}
+            <div>
+                <Button type="button" icon="pi pi-file" rounded onClick={() => exportCSV(false)} data-pr-tooltip="CSV" >CSV</Button>
+                <Button type="button" icon="pi pi-file" rounded onClick={() => exportJSON()} data-pr-tooltip="JSON" >JSON</Button>
+            </div>
+          
+            <DataTable  sortMode="multiple" value={customers} showGridlines loading={loading} dataKey="id" ref={dt} onValueChange={filteredData => newData = filteredData}
                     filters={filters} globalFilterFields={['SensorId','SensorType', 'Value']} header={header} emptyMessage="No entires found.">
                 <Column field="SensorId" header="SensorId" filter filterPlaceholder="Search by SensorId" style={{ minWidth: '12rem' }} sortable/>
                 <Column header="SensorType" field="SensorType" filterField="SensorType" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }} style={{ minWidth: '14rem' }}
