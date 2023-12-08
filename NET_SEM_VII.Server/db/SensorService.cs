@@ -1,11 +1,12 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace NET_SEM_VII.Server.db
 {
-    public class SensorsService
+    public class SensorsService : ISensorService
     {
         private readonly IMongoDatabase _db;
         public IMongoCollection<Entity> Entities { get; }
@@ -53,17 +54,39 @@ namespace NET_SEM_VII.Server.db
 
             return Entities.Find(e => e.SensorType == id).SortBy(e => e.Date).ToList().Take(100).ToList();
         }  
-        public async Task<List<Entity>> GetWithFiltersAndSort(string? type, string? id, DateTime? minDate = null, DateTime? maxDate = null,string sortOrder = "Ascending", string? sortBy = null)
+        public async Task<List<Entity>> GetWithFiltersAndSort(string? type, string? id, DateTime? minDate = null, DateTime? maxDate = null,string sortOrder = "ascending", string? sortBy = null)
         {
             var builder = Builders<Entity>.Filter;
-            SortDefinition<Entity>? a;
+            var builderSorter = Builders<Entity>.Sort;
+           
+            
+            SortDefinition<Entity> a = builderSorter.Ascending("Date");
             if (sortBy != null)
             {
-                var builderSorter = Builders<Entity>.Sort;
-                a =  builderSorter.Ascending(sortBy);
+                if(sortOrder == "ascending")
+                {
+                    a = builderSorter.Ascending(sortBy);
+                }
+                else
+                {
+                    a = builderSorter.Descending(sortBy);
+                }
+                
             }
-            var filter = builder.Eq(x => x.SensorType,type) & builder.Eq(x=> x.SensorId,id) & builder.Lte("Date", maxDate ?? DateTime.MaxValue) & builder.Gte("Date", minDate ?? DateTime.MinValue);
-            return await Entities.Find(filter).ToListAsync();
+            FilterDefinition<Entity> filter = builder.Empty;
+            if (type != null)
+            {
+                var types = type.Split(",");
+
+                filter = builder.In(x => x.SensorType, types);
+            }
+            if (id != null)
+            {
+                var ids = id.Split(",");
+                filter &= builder.In(x => x.SensorId, ids);
+            }
+            filter &= builder.Lte("Date", maxDate ?? DateTime.MaxValue) & builder.Gte("Date", minDate ?? DateTime.MinValue);
+            return await Entities.Find(filter).Sort(a).ToListAsync();
             
         }
 

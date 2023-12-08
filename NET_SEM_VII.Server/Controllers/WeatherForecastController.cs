@@ -1,33 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
+using NET_SEM_VII.Server.db;
+using System.Collections;
 
 namespace NET_SEM_VII.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("sensorData")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        private readonly ISensorService _sensorService;
 
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ISensorService sensorService)
         {
-            _logger = logger;
+            _sensorService = sensorService;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpGet(Name = "GetSensorData")]
+        public IEnumerable<Entity> Get(string? type, string? id, DateTime? minDate = null, DateTime? maxDate = null, string sortOrder = "Ascending", string? sortBy = "Date")
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            return _sensorService.GetWithFiltersAndSort(type, id, minDate, maxDate, sortOrder, sortBy).Result.ToArray();
         }
     }
 }
