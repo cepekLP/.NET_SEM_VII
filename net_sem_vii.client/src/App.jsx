@@ -3,18 +3,15 @@ import useWebSocket from 'react-use-websocket';
 import { DataTable } from 'primereact/datatable';
 import { InputText } from 'primereact/inputtext'
 import { Column } from 'primereact/column';
-import { classNames } from 'primereact/utils';
+
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
-import { Dropdown } from 'primereact/dropdown';
+
 import { InputNumber } from 'primereact/inputnumber';
 import { Button } from 'primereact/button';
-import { ProgressBar } from 'primereact/progressbar';
+
 import { Calendar } from 'primereact/calendar';
 import { MultiSelect } from 'primereact/multiselect';
-import { Slider } from 'primereact/slider';
-import { Tag } from 'primereact/tag';
-import { TriStateCheckbox } from 'primereact/tristatecheckbox';
-import { CustomerService } from './service/CustomerService';
+
 import { Chart } from 'primereact/chart';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import './App.css';
@@ -28,7 +25,7 @@ function App() {
     const [customers, setCustomers] = useState(null);
     const [accdata, setAccData] = useState(null);
     const [filters, setFilters] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [loading] = useState(false);
     const [dynamicDesktop, setDynDesk] = useState(false);
 
     const [globalFilterValue, setGlobalFilterValue] = useState('');
@@ -41,14 +38,13 @@ function App() {
         'RideHeight',
         'WheelSpeed',
         'WheelTemperature',
-        'DamperPosition' 
+        'DamperPosition'
     ]);
 
-    function checkDynamicDesktop()
-    {  
+    function checkDynamicDesktop() {
         setDynDesk(dynamicDesktopQuery);
     }
-    
+
 
     //CHART PART
     const [chartData, setChartData] = useState({});
@@ -56,7 +52,7 @@ function App() {
 
     const [newData, setNewData] = useState({});
 
-    const [initialData, setInitialData] = useState({});
+
 
     const [isFirst, setIsFirst] = useState(true);
 
@@ -65,31 +61,32 @@ function App() {
             console.log('WebSocket connection established.');
         },
         onMessage: (event) => {
-            try {
+            if (dynamicDesktopQuery) {
+                try {
 
-                if(isFirst)
-                {
-                    setIsFirst(false);
-                    //console.log(event.data);
-                    const newData = JSON.parse(event.data);
-                    console.log(isFirst);
-                    setCustomers(newData.map((d) => {
-                        d.Date = new Date(d.Date);
-                        return d;
-                    }));
+                    if (isFirst) {
+                        setIsFirst(false);
+                        //console.log(event.data);
+                        const newData = JSON.parse(event.data);
+                        console.log(newData);
+                        console.log(isFirst);
+                        setCustomers(newData.map((d) => {
+                            d.Date = new Date(d.Date);
+                            return d;
+                        }));
 
-                    
+
+                    }
+                    else {
+                        const newData = JSON.parse(event.data);
+                        console.log(newData);
+                        setAccData(newData);
+                    }
+
+                    //setCustomers()
+                } catch (err) {
+                    console.log(err);
                 }
-                else
-                {
-                    const newData = JSON.parse(event.data);
-                    console.log(newData);
-                    setAccData(newData);
-                }
-                
-                //setCustomers()
-            } catch (err) {
-                console.log(err);
             }
         }
     });
@@ -116,19 +113,34 @@ function App() {
             }
         ]
     };
+    const fetchAndSetData = (filter) => {
+        fetch("/sensorData?" + filter).then((de) => {
+            de.json().then((a) => {
+                console.log(a)
+                setCustomers(a);
+                setChartData(buildData(a))
+            })
 
+        }).catch((err) => console.log(err))
+    }
+    const [typeFilters, setTypeFilters] = useState();
+    const [idFilters, setIdFilters] = useState();
+    const [dateFilters, setDateFilters] = useState();
     useEffect(() => {
 
         checkDynamicDesktop();
+        if (dynamicDesktop) {
+            fetchAndSetData();
+        }
 
         initFilters();
 
         //CHART VALUES
-        
+
         const textColor = documentStyle.getPropertyValue('--text-color');
         const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
         const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
-        
+
         const options = {
             maintainAspectRatio: false,
             aspectRatio: 0.6,
@@ -163,25 +175,20 @@ function App() {
         setChartOptions(options);
     }, []);
 
-    const getCustomers = (data) => {
-        return [...(data || [])].map((d) => {
-            d.Date = new Date(d.Date);
-
-            return d;
-        });
-    };
-
-    const formatDate = (value) => {
-        return value.toLocaleDateString('en-US', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
-    };
-
-    const formatValue = (value) => {
-        return value.toString();
-    };
+    useEffect(() => {
+        let query = "";
+        if (typeFilters) {
+            query += "type=" + typeFilters + "&";
+        }
+        if (idFilters) {
+            query += "id=" + idFilters + "&";
+        }
+        if (dateFilters) {
+            query += "minDate=" + new Date(dateFilters).toUTCString() + "&";
+        }
+        console.log(query)
+        fetchAndSetData(query)
+    }, [typeFilters, idFilters, dateFilters])
 
     const clearFilter = () => {
         initFilters();
@@ -192,7 +199,7 @@ function App() {
         let _filters = { ...filters };
 
         _filters['global'].value = value;
-
+        console.log(_filters);
         setFilters(_filters);
         setGlobalFilterValue(value);
     };
@@ -220,30 +227,10 @@ function App() {
         );
     };
 
-    const filterClearTemplate = (options) => {
-        return <Button type="button" icon="pi pi-times" onClick={options.filterClearCallback} severity="secondary"></Button>;
-    };
 
-    const filterApplyTemplate = (options) => {
-        return <Button type="button" icon="pi pi-check" onClick={options.filterApplyCallback} severity="success"></Button>;
-    };
-
-    const filterFooterTemplate = () => {
-        return <div className="px-3 pt-0 pb-3 text-center">Filter by Country</div>;
-    };
-
-    const typeBodyTemplate = (rowData) => {
-        const type = rowData.SensorType;
-
-        return (
-            <div className="flex align-items-center gap-2">
-                <span>{type}</span>
-            </div>
-        );
-    };
 
     const typeFilterTemplate = (options) => {
-        return <MultiSelect value={options.value} options={types} itemTemplate={typesItemTemplate} onChange={(e) => options.filterCallback(e.value)} optionLabel="name" placeholder="Any" className="p-column-filter" />;
+        return <MultiSelect value={typeFilters} options={types} itemTemplate={typesItemTemplate} onChange={(e) => { setTypeFilters(e.value); }} optionLabel="name" placeholder="Any" className="w-full md:w-20rem" />;
     };
 
     const typesItemTemplate = (option) => {
@@ -254,75 +241,65 @@ function App() {
         );
     };
 
-    const dateBodyTemplate = (rowData) => {
-        return formatDate(rowData.Date);
-    };
 
     const dateFilterTemplate = (options) => {
-        return <Calendar value={options.value} onChange={(e) => options.filterCallback(e.value, options.index)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />;
+        return <Calendar value={dateFilters} onChange={(e) => setDateFilters(e.value)} showTime hourFormat="24" />;
     };
 
-    const valueBodyTemplate = (rowData) => {
-        return formatValue(rowData.Value);
-    };
 
     const valueFilterTemplate = (options) => {
-        return <InputNumber value={options.value} onChange={(e) => options.filterCallback(e.value, options.index)}/>;
+        return <MultiSelect value={idFilters} options={["0", "1", "2", "3"]} itemTemplate={typesItemTemplate} onChange={(e) => { setIdFilters(e.value); }} optionLabel="name" placeholder="Any" className="w-full md:w-20rem" />;
     };
 
     ///// CHARTS
 
     const colors = ["blue", "red", "green", "pink", "cyan", "magenta", "black", "yellow"]
- 
-    const getFilteredData = (filteredData) =>
-    {
-        if(filteredData)
-        {
+
+    const getFilteredData = (filteredData) => {
+        if (filteredData) {
             return types.flatMap(t => {
-                return ["0","1","2","3"].map((n)=> {
-                    return filteredData.filter(el =>  el.SensorId === n && el.SensorType === t )
+                return ["0", "1", "2", "3"].map((n) => {
+                    return filteredData.filter(el => el.sensorId === n && el.sensorType === t)
                 })
             })
         }
-        else
-        {
+        else {
             return {};
         }
-        
+
     }
 
-    const buildData = (aData) => 
-    {
-        const filData2 = getFilteredData(aData.sort((a, b) => { return new Date(a.Date) - new Date(b.Date); }));
+    const buildData = (aData) => {
+        const filData2 = getFilteredData(aData.sort((a, b) => { return new Date(a.date) - new Date(b.date); }));
         console.log(filData2);
         const filData = (filData2.filter((el) => el.length != 0));
 
 
-        if(filData.length)
-        {
+        if (filData.length) {
             console.log()
             let i = 0;
             const dataset = filData.flatMap((e) => {
                 if (e.length) {
                     i++;
                     return {
-                        label: e[0].SensorType + e[0].SensorId, data: e.map((d) => d.Value), fill: false, borderColor: documentStyle.getPropertyValue('--' + colors[(i-1)%8] + '-500'),
+                        label: e[0].sensorType + e[0].sensorId, data: e.map((d) => d.value), fill: false, borderColor: documentStyle.getPropertyValue('--' + colors[(i - 1) % 8] + '-500'),
                         tension: 0.4
                     }
                 }
-   
+
             });
 
             if (dataset) {
-                const mData = { labels: filData[0].map((a) => { return a.Date.getHours().toString() +":"+ a.Date.getMinutes() } ), datasets: dataset };
+                const lengths = filData.map(a => a.length);
+
+                const mData = { labels: filData[lengths.indexOf(Math.max(...lengths))].map((a) => { return new Date(a.date).getMinutes().toString() }), datasets: dataset };
                 console.log(mData);
                 return mData;
             }
 
-            
+
         }
-        else
-        {
+        else {
             return null;
         }
 
@@ -335,11 +312,10 @@ function App() {
         dt.current.exportCSV({ selectionOnly });
     };
 
-    const exportJSON = () => 
-    {  
+    const exportJSON = () => {
         function download(content, fileName, contentType) {
             var a = document.createElement("a");
-            var file = new Blob([content], {type: contentType});
+            var file = new Blob([content], { type: contentType });
             a.href = URL.createObjectURL(file);
             a.download = fileName;
             a.click();
@@ -349,41 +325,44 @@ function App() {
 
 
     const header = renderHeader();
+    console.log(accdata)
     return (
-        <div className="card" style={{visibility: false}}>
-            {/* <Chart type="line" data={chartData} options={chartOptions} /> */}
+        <div className="card" style={{ visibility: false }}>
 
-            { dynamicDesktop && <div>
-            <DataTable value={accdata}>
-                <Column field="SensorId" header="SensorId" sortable/>
-                <Column field="SensorType" header="SensorType" sortable/>
-                <Column field="CurrentValue" header="CurrentValue" sortable/>
-                <Column field="AverageValue" header="AverageValue" sortable/>
-            </DataTable>
-            </div> }
+
+            {dynamicDesktop && <div>
+
+                <DataTable value={accdata}>
+                    <Column field="SensorId" header="SensorId" sortable />
+                    <Column field="SensorType" header="SensorType" sortable />
+                    <Column field="CurrentValue" header="CurrentValue" sortable />
+                    <Column field="AverageValue" header="AverageValue" sortable />
+                </DataTable>
+            </div>}
             <p></p>
             <p></p>
 
-            { dynamicDesktop == false && <div>
+            {customers && dynamicDesktop == false && <div>
+                <Chart type="line" data={chartData} options={chartOptions} />
                 <Button type="button" icon="pi pi-file" rounded onClick={() => exportCSV(false)} data-pr-tooltip="CSV" >CSV</Button>
                 <Button type="button" icon="pi pi-file" rounded onClick={() => exportJSON()} data-pr-tooltip="JSON" >JSON</Button>
-            
-            <DataTable sortMode="multiple" value={customers} showGridlines loading={loading} dataKey="id" ref={dt} onValueChange={filteredData => {
-                setNewData(filteredData);
-                const a = buildData(filteredData); console.log(a); if (a) {
-                    setChartData(a);
+
+                <DataTable sortMode="multiple" value={customers} showGridlines loading={loading} dataKey="id" ref={dt} onValueChange={filteredData => {
+                    console.log(filteredData);
+                    const a = buildData(filteredData); console.log(a); if (a) {
+                        setChartData(a);
                     }
                 }}
-                    filters={filters} globalFilterFields={['SensorId','SensorType', 'Value']} header={header} emptyMessage="No entires found.">
-                <Column field="SensorId" header="SensorId" filter filterPlaceholder="Search by SensorId" style={{ minWidth: '12rem' }} sortable/>
-                <Column header="SensorType" field="SensorType" filterField="SensorType" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }} style={{ minWidth: '14rem' }}
-                    body={typeBodyTemplate} filter filterElement={typeFilterTemplate} sortable/>
-                <Column header="Date" field="Date" filterField="Date" dataType="date" style={{ minWidth: '10rem' }} body={dateBodyTemplate} filter filterElement={dateFilterTemplate} sortable/>
-                <Column header="Value" field="Value" filterField="Value" dataType="numeric" style={{ minWidth: '10rem' }} body={valueBodyTemplate} filter filterElement={valueFilterTemplate} sortable/>
-            </DataTable>
-            <Chart type="line" data={chartData} options={chartOptions} />
-            </div>} 
-           
+                    filters={filters} globalFilterFields={['SensorId', 'SensorType', 'Value']} header={header} emptyMessage="No entires found.">
+                    <Column field="sensorId" header="SensorId" filterField="SensorId" showFilterMatchModes={false} filter filterElement={valueFilterTemplate} sortable />
+                    <Column header="SensorType" field="sensorType" filterField="SensorType" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }} style={{ minWidth: '14rem' }}
+                        filter filterElement={typeFilterTemplate} sortable />
+                    <Column header="Date" field="date" filterField="Date" dataType="date" style={{ minWidth: '10rem' }} filter filterElement={dateFilterTemplate} sortable />
+                    <Column header="Value" field="value" filterField="Value" dataType="numeric" style={{ minWidth: '10rem' }} filter filterElement={valueFilterTemplate} sortable />
+                </DataTable>
+                {/*   <Chart type="line" data={chartData} options={chartOptions} />*/}
+            </div>}
+
         </div>
     );
 }
