@@ -69,9 +69,11 @@ namespace NET_SEM_VII.Server.Controllers
                     ;
                 }
                 connected = mqttClient.IsConnected;
-                
+              
+
                 //await Task.Delay(10000, cancellationToken);
             }
+            await mqttClient.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
             Console.WriteLine("### RECONNECTED WITH SERVER ###");
         }
         public async void SubscribeTopics()
