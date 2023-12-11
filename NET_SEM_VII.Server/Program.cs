@@ -27,6 +27,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<ISensorService, SensorsService>();
 /*builder.WebHost.UseUrls("https://localhost:6969");*/
 var app = builder.Build();
 
