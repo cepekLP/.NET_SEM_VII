@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import useWebSocket from 'react-use-websocket';
 import { DataTable } from 'primereact/datatable';
 import { InputText } from 'primereact/inputtext'
@@ -184,7 +184,9 @@ function App() {
             query += "id=" + idFilters + "&";
         }
         if (dateFilters) {
-            query += "minDate=" + new Date(dateFilters).toUTCString() + "&";
+            query += "minDate=" + new Date(dateFilters[0]).toUTCString() + "&";
+            if (dateFilters[1])
+            query += "maxDate=" + new Date(dateFilters[1]).toUTCString();
         }
         console.log(query)
         fetchAndSetData(query)
@@ -243,7 +245,7 @@ function App() {
 
 
     const dateFilterTemplate = (options) => {
-        return <Calendar value={dateFilters} onChange={(e) => setDateFilters(e.value)} showTime hourFormat="24" />;
+        return <Calendar style={{ width: '400px' }} value={dateFilters} onChange={(e) => { setDateFilters(e.value); console.log(e) }} selectionMode="range" showTime hourFormat="24" />;
     };
 
 
@@ -311,7 +313,7 @@ function App() {
     const exportCSV = (selectionOnly) => {
         dt.current.exportCSV({ selectionOnly });
     };
-
+    const [filtereD, setFilteredD] = useState(customers);
     const exportJSON = () => {
         function download(content, fileName, contentType) {
             var a = document.createElement("a");
@@ -320,12 +322,13 @@ function App() {
             a.download = fileName;
             a.click();
         }
-        download(JSON.stringify(newData), 'json.txt', 'text/plain');
+        download(JSON.stringify(filtereD), 'json.txt', 'text/plain');
     };
 
-
+    const chartD = useMemo(() => {
+        return chartData
+    }, [chartData])
     const header = renderHeader();
-    console.log(accdata)
     return (
         <div className="card" style={{ visibility: false }}>
 
@@ -341,23 +344,24 @@ function App() {
             </div>}
             <p></p>
             <p></p>
-
+            
             {customers && dynamicDesktop == false && <div>
-                <Chart type="line" data={chartData} options={chartOptions} />
+                <Chart type="line" data={chartD} options={chartOptions} />
                 <Button type="button" icon="pi pi-file" rounded onClick={() => exportCSV(false)} data-pr-tooltip="CSV" >CSV</Button>
                 <Button type="button" icon="pi pi-file" rounded onClick={() => exportJSON()} data-pr-tooltip="JSON" >JSON</Button>
 
-                <DataTable sortMode="multiple" value={customers} showGridlines loading={loading} dataKey="id" ref={dt} onValueChange={filteredData => {
+                <DataTable paginator rows={100} sortMode="multiple" value={customers} showGridlines loading={loading} dataKey="id" ref={dt} onValueChange={filteredData => {
                     console.log(filteredData);
+                    setFilteredD(filteredData)
                     const a = buildData(filteredData); console.log(a); if (a) {
                         setChartData(a);
                     }
                 }}
-                    filters={filters} globalFilterFields={['SensorId', 'SensorType', 'Value']} header={header} emptyMessage="No entires found.">
+                    filters={filters} header={header} emptyMessage="No entires found.">
                     <Column field="sensorId" header="SensorId" filterField="SensorId" showFilterMatchModes={false} filter filterElement={valueFilterTemplate} sortable />
-                    <Column header="SensorType" field="sensorType" filterField="SensorType" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }} style={{ minWidth: '14rem' }}
+                    <Column header="SensorType" field="sensorType" filterField="SensorType" showFilterMatchModes={false} showApplyButton={false} filterMenuStyle={{ width: '14rem' }} style={{ minWidth: '14rem' }}
                         filter filterElement={typeFilterTemplate} sortable />
-                    <Column header="Date" field="date" filterField="Date" dataType="date" style={{ minWidth: '10rem' }} filter filterElement={dateFilterTemplate} sortable />
+                    <Column header="Date" field="date" filterField="Date" dataType="date" style={{ minWidth: '10rem' }} showApplyButton={false}  showFilterMatchModes={false} filter filterElement={dateFilterTemplate} sortable />
                     <Column header="Value" field="value" filterField="Value" dataType="numeric" style={{ minWidth: '10rem' }} filter filterElement={valueFilterTemplate} sortable />
                 </DataTable>
                 {/*   <Chart type="line" data={chartData} options={chartOptions} />*/}
