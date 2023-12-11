@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MongoDB.Driver.Core.Servers;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Formatter;
@@ -14,35 +15,19 @@ namespace NET_SEM_VII.Server.Controllers
 {
     public class MQTTController
     {
-        MqttFactory? mqttFactory;
-        IMqttClient? mqttClient;
+        MqttFactory mqttFactory;
+        IMqttClient mqttClient;
         SensorsService sensorsService;
+        MqttClientOptions mqttOptions;
+        MqttClientSubscribeOptions mqttSubscribeOptions;
 
         public event Func<String, Task>? ApplicationMessageReceivedAsync;
         public MQTTController()
         {
-            SubscribeTopics();
-            sensorsService = new SensorsService();
-            ApplicationMessageReceivedAsync = null;
-        }
-
-        public async void SubscribeTopics()
-        {
-            /*
-             * This sample subscribes to several topics in a single request.
-             */
-
             mqttFactory = new MqttFactory();
-
             mqttClient = mqttFactory.CreateMqttClient();
-
-            var mqttClientOptions = new MqttClientOptionsBuilder().WithTcpServer("mqttbroker").Build();
-
-            await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None);
-
-            // Create the subscribe options including several topics with different options.
-            // It is also possible to all of these topics using a dedicated call of _SubscribeAsync_ per topic.
-            var mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder()
+            mqttOptions = new MqttClientOptionsBuilder().WithTcpServer("mqttbroker").Build();
+            mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder()
                 .WithTopicFilter(
                     f =>
                     {
@@ -65,6 +50,40 @@ namespace NET_SEM_VII.Server.Controllers
                     })
                 .Build();
 
+            SubscribeTopics();
+            sensorsService = new SensorsService();
+            ApplicationMessageReceivedAsync = null;
+        }
+
+        private async Task TryReconnectAsync()
+        {
+            var connected = mqttClient.IsConnected;
+            while (!connected)
+            {
+                try
+                {
+                    await mqttClient.ReconnectAsync(CancellationToken.None);
+                }
+                catch
+                {
+                    ;
+                }
+                connected = mqttClient.IsConnected;
+                
+                //await Task.Delay(10000, cancellationToken);
+            }
+            Console.WriteLine("### RECONNECTED WITH SERVER ###");
+        }
+        public async void SubscribeTopics()
+        {        
+            await mqttClient.ConnectAsync(mqttOptions, CancellationToken.None);
+            mqttClient.DisconnectedAsync += async (e) =>
+            {
+                Console.WriteLine("### DISCONNECTED FROM SERVER ###");
+                await TryReconnectAsync();
+            };
+            // Create the subscribe options including several topics with different options.
+            // It is also possible to all of these topics using a dedicated call of _SubscribeAsync_ per topic.
             mqttClient.ApplicationMessageReceivedAsync += e =>
             {
                 var entity = new Entity();
@@ -91,7 +110,6 @@ namespace NET_SEM_VII.Server.Controllers
             var response = await mqttClient.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
 
             Console.WriteLine("MQTT client subscribed to topics.");
-
 
             // The response contains additional data sent by the server after subscribing.
             // response.DumpToConsole();
